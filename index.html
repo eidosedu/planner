@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planner Semanal - Release</title>
+    <title>Planner Semanal - Release Final</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -16,11 +16,19 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
-        body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* CORREÇÃO DE RESPONSIVIDADE E BARRAS DE NAVEGADOR */
+        html { width: 100%; height: 100%; }
+        body { 
+            background-color: var(--bg); color: var(--text); 
+            width: 100%; height: 100%; height: 100dvh; 
+            display: flex; flex-direction: column; overflow: hidden; 
+        }
 
         header { background-color: var(--surface); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 50; min-height: 60px; flex-shrink: 0;}
         .header-left { display: flex; align-items: center; gap: 12px; }
         .header-title { font-size: 1.15rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;}
+        .header-subtitle { font-size: 0.75rem; color: var(--accent); background: var(--surface-hover); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600;}
         .header-actions { display: flex; gap: 8px; }
 
         button { border: none; outline: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; background: transparent; gap: 6px; font-size: 0.9rem;}
@@ -86,12 +94,13 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .settings-bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 90; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
+        .settings-bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 90; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
+        /* MODAIS RESPONSIVOS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
-        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; position: relative;}
+        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90%; max-height: 90dvh; overflow: hidden; position: relative;}
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 16px; flex-shrink: 0;}
@@ -122,6 +131,11 @@
         textarea { width: 100%; height: 250px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
         textarea:focus { border-color: var(--accent); }
 
+        /* Perfis Switcher */
+        .profile-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--surface-hover); cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
+        .profile-item.active { background-color: #eff6ff; border-color: var(--accent); }
+        .profile-item:hover { border-color: var(--accent); }
+
         #pdf-export-container { display: none; }
         svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     </style>
@@ -135,10 +149,13 @@
             </button>
             <div class="header-title" id="main-title">
                 <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Planner Semanal
+                Planner <span class="header-subtitle" id="current-profile-badge">Turma</span>
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn-icon" onclick="openProfileSwitch()" title="Trocar Turma">
+                <svg viewBox="0 0 24 24"><path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h13.8"></path><path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H3.2"></path></svg>
+            </button>
             <button class="btn-icon" onclick="openSettings()" id="btn-settings" title="Configurações">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
@@ -258,6 +275,32 @@
         <div class="settings-bottom-bar" id="settings-footer">
             <button class="btn-outline" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
             <button class="btn-primary" onclick="saveSettings()">Salvar Configurações</button>
+        </div>
+    </div>
+
+    <!-- MODAL: SWITCH DE PERFIL (TURMAS) -->
+    <div class="modal-overlay" id="modal-switch" onclick="handleOverlayClick(event, 'modal-switch')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size: 1.1rem; display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--accent);"><path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h13.8"></path><path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H3.2"></path></svg>
+                    Alternar Turma
+                </h3>
+                <button class="btn-icon" onclick="closeModal('modal-switch')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            
+            <div class="modal-body">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Selecione uma turma existente para carregar a grade:</div>
+                <div id="profiles-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
+            </div>
+
+            <div class="modal-footer" style="flex-direction: column; align-items: stretch; background: var(--surface-hover);">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px;">Criar Nova Turma (Em Branco)</div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="new-profile-name" class="input-flat" placeholder="Ex: 5º Ano B (Tarde)" style="flex: 1;">
+                    <button class="btn-primary" onclick="createNewProfile()">Adicionar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -383,7 +426,6 @@
         const SUBJECTS_LIST = ["Língua Portuguesa", "Matemática", "Ciências", "História", "Geografia", "Ensino Religioso", "Ed. Física", "Sustentabilidade Planetária", "Educação Digital", "Arte", "Inglês", "Vago"];
         const DAYS_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
         
-        // Padrões Nativos para Inicialização (Zero Customização Inicial)
         const DEFAULT_DINAMICAS = ["Aula Expositiva", "Leitura Expositiva", "Recurso Audiovisual", "Trabalho em Grupo", "Duplas Produtivas", "Correção Coletiva", "Dinâmica de Grupo", "Acolhimento", "Atividade", "Avaliação Somativa", "Avaliação Formativa", "Avaliação Diagnóstica"];
         const DEFAULT_RECURSOS = ["Folha Impresa", "Apostila", "Caderno", "Lousa Digital", "Recurso Concreto", "Jogos Pedagógicos", "Tablet/Notebook", "Lab. de Informática", "Lab. de Ciências"];
         const DEFAULT_EXT = ["Palestra", "Excursão", "Viagem", "Visita", "SAEB", "SAESE", "Av. Externa", "Aula Externa", "Dinâmica na Quadra", "Festinha", "Feirinha Pedagógica"];
@@ -393,19 +435,13 @@
             "Tarde": { tempos: ["13:00 - 13:50", "13:50 - 14:40", "14:40 - 15:30", "15:50 - 16:40", "16:40 - 17:30"], intervaloPosicao: 3, intervaloTempo: "15:30 - 15:50" }
         };
 
-        let appConfig = {
-            escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: "", turno: "Manhã",
-            tempos: [...SHIFT_PRESETS["Manhã"].tempos], // Deep copy pra não quebrar a referência
-            intervaloPosicao: SHIFT_PRESETS["Manhã"].intervaloPosicao, 
-            intervaloTempo: SHIFT_PRESETS["Manhã"].intervaloTempo,
-            sabAtivo: false, sabEspelha: 0, livros: [],
-            dinamicas: [...DEFAULT_DINAMICAS],
-            recursos: [...DEFAULT_RECURSOS],
-            ext: [...DEFAULT_EXT],
-            matriz: Array(5).fill().map(() => Array(5).fill("Língua Portuguesa"))
-        };
+        // --- SISTEMA DE MÚLTIPLOS PERFIS ---
+        let dbIndex = { active: 'default', profiles: [{ id: 'default', name: 'Turma Principal' }] };
+        let currentProfileId = 'default';
 
+        let appConfig = {};
         let appData = { contents: {} };
+        
         let currentSlotId = null;
         let isDirty = false;
         let alertCallback = null;
@@ -416,27 +452,139 @@
         let activeRecursos = [];
         let activeExt = []; 
 
+        function getDefaultConfig() {
+            return {
+                escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: "", turno: "Manhã",
+                tempos: [...SHIFT_PRESETS["Manhã"].tempos],
+                intervaloPosicao: SHIFT_PRESETS["Manhã"].intervaloPosicao, 
+                intervaloTempo: SHIFT_PRESETS["Manhã"].intervaloTempo,
+                sabAtivo: false, sabEspelha: 0, livros: [],
+                dinamicas: [...DEFAULT_DINAMICAS], recursos: [...DEFAULT_RECURSOS], ext: [...DEFAULT_EXT],
+                matriz: Array(5).fill().map(() => Array(5).fill("Língua Portuguesa"))
+            };
+        }
+
         window.onload = () => {
-            if(localStorage.getItem('plannerConfigFinal')) {
-                appConfig = JSON.parse(localStorage.getItem('plannerConfigFinal'));
-                // Migração de Arrays Customizados (caso abra versão antiga salva)
+            // Migração Inteligente e Carregamento
+            let savedIndex = localStorage.getItem('planner_index_v2');
+            
+            if (savedIndex) {
+                dbIndex = JSON.parse(savedIndex);
+            } else {
+                let oldConfig = localStorage.getItem('plannerConfigFinal');
+                let oldData = localStorage.getItem('plannerDataFinal');
+                
+                if(oldConfig) {
+                    localStorage.setItem('plannerConfig_default', oldConfig);
+                    let cfg = JSON.parse(oldConfig);
+                    let nome = (cfg.serie && cfg.turmaLetra) ? `${cfg.serie} ${cfg.turmaLetra}` : 'Turma Principal';
+                    dbIndex.profiles[0].name = nome;
+                } else {
+                    isFirstRun = true;
+                }
+                if(oldData) localStorage.setItem('plannerData_default', oldData);
+                
+                localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+            }
+
+            currentProfileId = dbIndex.active;
+            loadProfile(currentProfileId);
+
+            if (isFirstRun) openModal('modal-welcome');
+        };
+
+        function loadProfile(id) {
+            currentProfileId = id;
+            dbIndex.active = id;
+            localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+
+            let savedConfig = localStorage.getItem('plannerConfig_' + id);
+            let savedData = localStorage.getItem('plannerData_' + id);
+
+            if (savedConfig) {
+                appConfig = JSON.parse(savedConfig);
                 if(!appConfig.dinamicas) appConfig.dinamicas = [...DEFAULT_DINAMICAS];
                 if(!appConfig.recursos) appConfig.recursos = [...DEFAULT_RECURSOS];
                 if(!appConfig.ext) appConfig.ext = [...DEFAULT_EXT];
-
-                if(localStorage.getItem('plannerDataFinal')) appData = JSON.parse(localStorage.getItem('plannerDataFinal'));
-                renderMainGrid();
             } else {
-                isFirstRun = true;
-                openModal('modal-welcome');
+                appConfig = getDefaultConfig();
             }
-            buildSettingsMatrix();
-        };
 
+            if (savedData) appData = JSON.parse(savedData);
+            else appData = { contents: {} };
+
+            let profInfo = dbIndex.profiles.find(p => p.id === id);
+            document.getElementById('current-profile-badge').innerText = profInfo ? profInfo.name : 'Turma';
+
+            renderMainGrid();
+            buildSettingsMatrix();
+        }
+
+        function saveCurrentProfile() {
+            localStorage.setItem('plannerConfig_' + currentProfileId, JSON.stringify(appConfig));
+            localStorage.setItem('plannerData_' + currentProfileId, JSON.stringify(appData));
+        }
+
+        // FUNÇÕES DO MODAL DE SWITCH
+        function openProfileSwitch() {
+            const list = document.getElementById('profiles-list');
+            list.innerHTML = '';
+            
+            dbIndex.profiles.forEach(p => {
+                let div = document.createElement('div');
+                div.className = `profile-item ${p.id === currentProfileId ? 'active' : ''}`;
+                
+                let btnDel = p.id !== currentProfileId ? `<button class="list-item-btn" onclick="event.stopPropagation(); deleteProfile('${p.id}', '${p.name}')"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>` : '';
+                
+                div.innerHTML = `<span style="font-weight: 600;">${p.name}</span> ${btnDel}`;
+                div.onclick = () => {
+                    if(isDirty) {
+                        customConfirm("Atenção", "Há edições não salvas nesta turma. Deseja sair sem salvar e trocar?", () => switchProfileExec(p.id));
+                    } else {
+                        switchProfileExec(p.id);
+                    }
+                };
+                list.appendChild(div);
+            });
+            openModal('modal-switch');
+        }
+
+        function switchProfileExec(id) {
+            closeModal('modal-switch');
+            isDirty = false;
+            loadProfile(id);
+        }
+
+        function createNewProfile() {
+            let input = document.getElementById('new-profile-name');
+            let name = input.value.trim();
+            if(!name) { customAlert("Aviso", "Digite um nome para a nova turma."); return; }
+            
+            let newId = 'prof_' + Date.now();
+            dbIndex.profiles.push({ id: newId, name: name });
+            localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+            
+            input.value = '';
+            switchProfileExec(newId);
+        }
+
+        function deleteProfile(id, name) {
+            customConfirm("Excluir", `Tem certeza que deseja apagar a turma "${name}" e todo o seu planejamento? Isso não pode ser desfeito.`, () => {
+                dbIndex.profiles = dbIndex.profiles.filter(p => p.id !== id);
+                localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+                localStorage.removeItem('plannerConfig_' + id);
+                localStorage.removeItem('plannerData_' + id);
+                openProfileSwitch(); // Re-render lista
+            });
+        }
+
+
+        // KODULAR E BRIDGE
         window.receberTextoDoKodular = function(texto) { console.log(texto); };
 
         window.handleAndroidBack = function() {
             if(document.getElementById('modal-alert').classList.contains('active')) { closeModal('modal-alert'); return; }
+            if(document.getElementById('modal-switch').classList.contains('active')) { closeModal('modal-switch'); return; }
             if(document.getElementById('modal-slot').classList.contains('active')) {
                 if(isDirty) customConfirm("Atenção", "Sair sem salvar as alterações desta aula?", () => { isDirty = false; closeModal('modal-slot'); });
                 else closeModal('modal-slot');
@@ -456,7 +604,6 @@
             document.getElementById('btn-back').style.display = 'none';
             document.getElementById('btn-settings').style.display = 'flex';
             document.getElementById('btn-pdf').style.display = 'flex';
-            document.getElementById('main-title').innerHTML = '<svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Planner Semanal';
         }
 
         function switchTab(tabId) {
@@ -677,7 +824,6 @@
             activeRecursos = slotData.recursos ? [...slotData.recursos] : [];
             activeExt = slotData.ext ? [...slotData.ext] : [];
             
-            // Render chips vindos do appConfig (Personalizados pelo usuário)
             renderModalChips('chips-dinamicas', appConfig.dinamicas, activeDinamicas);
             renderModalChips('chips-recursos', appConfig.recursos, activeRecursos);
             renderModalChips('chips-ext', appConfig.ext, activeExt, true); 
@@ -702,7 +848,7 @@
                 isFreeText: (activeTab === 'tab-livre'),
                 freeText: document.getElementById('slot-textarea').value.trim()
             };
-            localStorage.setItem('plannerDataFinal', JSON.stringify(appData));
+            saveCurrentProfile();
             isDirty = false;
             renderMainGrid();
             closeModal('modal-slot');
@@ -746,7 +892,7 @@
                 document.getElementById('settings-footer').style.display = 'flex';
                 document.getElementById('btn-cancel-settings').style.display = 'block';
             }
-            document.getElementById('main-title').innerHTML = 'Configurações da Grade';
+            document.getElementById('main-title').innerHTML = 'Configurações';
         }
 
         function renderTimesInputs() {
@@ -757,7 +903,6 @@
             }
         }
 
-        // Bug Corrigido: Clonar o Array [...preset] evita quebrar os presets originais
         function updateShiftPresets() {
             const shift = document.getElementById('cfg-turno').value;
             const preset = SHIFT_PRESETS[shift];
@@ -809,7 +954,14 @@
                 for(let a=0; a<5; a++) { appConfig.matriz[d][a] = document.getElementById(`sel-d${d}-a${a}`).value; }
             }
 
-            localStorage.setItem('plannerConfigFinal', JSON.stringify(appConfig));
+            let pIndex = dbIndex.profiles.findIndex(p => p.id === currentProfileId);
+            if(pIndex !== -1 && appConfig.serie) {
+                dbIndex.profiles[pIndex].name = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
+                localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+                document.getElementById('current-profile-badge').innerText = dbIndex.profiles[pIndex].name;
+            }
+
+            saveCurrentProfile();
             isFirstRun = false;
             renderMainGrid();
             navigateBack();
@@ -842,21 +994,8 @@
         }
         function executeAlertCallback() { if(alertCallback) alertCallback(); }
 
-        // --- SISTEMA HÍBRIDO DE PDF ---
-        function acionarGeracaoPDF() {
-            if (window.AppInventor) {
-                customAlert("Aguarde", "Enviando dados para o servidor na nuvem...");
-                let payload = JSON.stringify({ app: "PlannerSemanal", config: appConfig, data: appData.contents });
-                window.AppInventor.setWebViewString("GERAR_PDF_GAS:" + payload);
-                setTimeout(() => closeModal('modal-alert'), 1500);
-            } else {
-                generatePDF(); // Gerador Local PWA (Tablets / PC)
-            }
-        }
-
-        // --- PDF LOCAL via html2pdf ---
-        function generatePDF() {
-            const exportContainer = document.getElementById('pdf-export-container');
+        // --- SISTEMA DE GERAÇÃO E ENVIO DE PDF ---
+        function getExportHTML() {
             const cols = appConfig.sabAtivo ? 6 : 5;
             const turmaCompleta = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
             
@@ -936,15 +1075,46 @@
             }
 
             htmlStr += `</div></div>`;
-            exportContainer.innerHTML = htmlStr;
+            return htmlStr;
+        }
+
+        function acionarGeracaoPDF() {
+            const exportContainer = document.getElementById('pdf-export-container');
+            exportContainer.innerHTML = getExportHTML();
             exportContainer.style.display = 'block';
 
-            const opt = { margin: 5, filename: 'Planner.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
-            customAlert("Aguarde", "O PDF está sendo gerado localmente...");
-            html2pdf().set(opt).from(exportContainer.firstElementChild).save().then(() => {
-                exportContainer.style.display = 'none';
-                exportContainer.innerHTML = '';
-            });
+            const opt = { 
+                margin: 5, 
+                filename: 'Planner.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2 }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+            };
+
+            if (window.AppInventor) {
+                customAlert("Aguarde", "Desenhando PDF e enviando para nuvem...");
+                html2pdf().set(opt).from(exportContainer.firstElementChild).outputPdf('datauristring').then(function(pdfBase64) {
+                    exportContainer.style.display = 'none';
+                    exportContainer.innerHTML = '';
+                    
+                    let base64Data = pdfBase64.split(',')[1];
+                    let payload = JSON.stringify({ 
+                        app: "PlannerSemanal", 
+                        fileName: `Planner_${appConfig.serie}_${appConfig.turmaLetra}.pdf`.replace(/\s/g, '_'),
+                        fileData: base64Data 
+                    });
+                    
+                    window.AppInventor.setWebViewString("GERAR_PDF_GAS:" + payload);
+                    setTimeout(() => closeModal('modal-alert'), 500);
+                });
+            } else {
+                customAlert("Aguarde", "O PDF está sendo gerado localmente...");
+                html2pdf().set(opt).from(exportContainer.firstElementChild).save().then(() => {
+                    exportContainer.style.display = 'none';
+                    exportContainer.innerHTML = '';
+                    closeModal('modal-alert');
+                });
+            }
         }
     </script>
 </body>
