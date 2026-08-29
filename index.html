@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planner Semanal - Release Final</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Planner Semanal</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -17,12 +17,14 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
         
-        /* CORREÇÃO DE RESPONSIVIDADE E BARRAS DE NAVEGADOR */
-        html { width: 100%; height: 100%; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background-color: var(--bg); }
         body { 
-            background-color: var(--bg); color: var(--text); 
-            width: 100%; height: 100%; height: 100dvh; 
-            display: flex; flex-direction: column; overflow: hidden; 
+            color: var(--text); 
+            height: 100dvh; 
+            display: flex; flex-direction: column; 
+        }
+        @supports (-webkit-touch-callout: none) {
+            body { height: -webkit-fill-available; }
         }
 
         header { background-color: var(--surface); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 50; min-height: 60px; flex-shrink: 0;}
@@ -42,7 +44,7 @@
         .btn-outline { padding: 0 16px; height: 40px; border-radius: 8px; border: 1px solid var(--border); color: var(--text); font-weight: 600; background: var(--surface); }
         .btn-outline:hover { background-color: var(--surface-hover); }
 
-        .view { display: none; flex: 1; overflow-y: auto; padding: 16px; flex-direction: column; position: relative; }
+        .view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; flex-direction: column; position: relative; }
         .view.active { display: flex; }
 
         .week-container { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding-bottom: 20px; align-items: flex-start; }
@@ -58,7 +60,7 @@
         
         .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 6px; border: 1px dashed var(--border); border-radius: 6px; margin: 4px 0; background-color: var(--bg); pointer-events: none;}
 
-        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px; padding-bottom: 80px;} 
+        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px; padding-bottom: 100px; } 
         .settings-section { background-color: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .settings-section h3 { font-size: 1.1rem; border-bottom: 2px solid var(--surface-active); padding-bottom: 8px; margin-bottom: 16px; color: var(--text); }
         
@@ -94,13 +96,12 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .settings-bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 90; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
+        .settings-bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 999; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
 
-        /* MODAIS RESPONSIVOS */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
-        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90%; max-height: 90dvh; overflow: hidden; position: relative;}
+        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90dvh; overflow: hidden; position: relative;}
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 16px; flex-shrink: 0;}
@@ -131,7 +132,6 @@
         textarea { width: 100%; height: 250px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
         textarea:focus { border-color: var(--accent); }
 
-        /* Perfis Switcher */
         .profile-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--surface-hover); cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
         .profile-item.active { background-color: #eff6ff; border-color: var(--accent); }
         .profile-item:hover { border-color: var(--accent); }
@@ -153,7 +153,7 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-icon" onclick="openProfileSwitch()" title="Trocar Turma">
+            <button class="btn-icon" id="btn-profile-switch" onclick="openProfileSwitch()" title="Trocar Turma">
                 <svg viewBox="0 0 24 24"><path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h13.8"></path><path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H3.2"></path></svg>
             </button>
             <button class="btn-icon" onclick="openSettings()" id="btn-settings" title="Configurações">
@@ -197,13 +197,22 @@
                             <option value="Tarde">Vespertino (Tarde)</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Período da Semana</label><input type="text" id="cfg-periodo" class="input-flat" placeholder="Ex: 01/08 a 05/08"></div>
+                    
+                    <div class="form-group">
+                        <label>Período da Semana</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="cfg-periodo" class="input-flat" placeholder="Ex: 01/08 a 05/08" style="flex: 1;">
+                            <button class="btn-outline" onclick="document.getElementById('cfg-periodo').value = getAutoWeekPeriod();" title="Preencher com a Semana Atual" style="padding: 0 12px;">
+                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; color: var(--accent);"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="form-group"><label>Prof. Regente</label><input type="text" id="cfg-prof" class="input-flat"></div>
                     <div class="form-group"><label>Prof. Ed. Física</label><input type="text" id="cfg-prof-ed" class="input-flat"></div>
                 </div>
             </div>
 
-            <!-- PERSONALIZAÇÃO DE BOTÕES RÁPIDOS -->
             <div class="settings-section">
                 <h3>Personalizar Opções (Preenchimento Rápido)</h3>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Crie ou remova itens que aparecem como botões clicáveis no modal de aula.</p>
@@ -271,7 +280,7 @@
             </div>
 
         </div>
-        <!-- FIXED BOTTOM BAR -->
+        
         <div class="settings-bottom-bar" id="settings-footer">
             <button class="btn-outline" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
             <button class="btn-primary" onclick="saveSettings()">Salvar Configurações</button>
@@ -335,9 +344,15 @@
             <div class="modal-body">
                 <div class="tab-content active" id="tab-rapido">
                     
-                    <div class="form-group">
-                        <label>Assunto / Competência (Opcional)</label>
-                        <input type="text" id="slot-assunto" class="input-flat" placeholder="Ex: Frações, Leitura e Interpretação..." oninput="isDirty=true;">
+                    <div class="form-row-compact">
+                        <div class="form-group">
+                            <label>Assunto / Conteúdo (Opcional)</label>
+                            <input type="text" id="slot-assunto" class="input-flat" placeholder="Ex: Frações, Leitura..." oninput="isDirty=true;">
+                        </div>
+                        <div class="form-group">
+                            <label>Cód. / Competência (BNCC)</label>
+                            <input type="text" id="slot-bncc" class="input-flat" placeholder="Ex: EF05LP01" oninput="isDirty=true;">
+                        </div>
                     </div>
 
                     <div class="switch-container" style="margin-bottom: 0; background-color: var(--warning-light, #fffbeb); border-color: var(--warning);">
@@ -427,7 +442,7 @@
         const DAYS_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
         
         const DEFAULT_DINAMICAS = ["Aula Expositiva", "Leitura Expositiva", "Recurso Audiovisual", "Trabalho em Grupo", "Duplas Produtivas", "Correção Coletiva", "Dinâmica de Grupo", "Acolhimento", "Atividade", "Avaliação Somativa", "Avaliação Formativa", "Avaliação Diagnóstica"];
-        const DEFAULT_RECURSOS = ["Folha Impresa", "Apostila", "Caderno", "Lousa Digital", "Recurso Concreto", "Jogos Pedagógicos", "Tablet/Notebook", "Lab. de Informática", "Lab. de Ciências"];
+        const DEFAULT_RECURSOS = ["Folha Impresa", "Apostila", "Caderno", "Lousa Digital", "Recurso Concreto", "Jogos Pedagógicos", "Tablet/Notebook", "Lab. de Informática", "Lab. de Ciências", "Texto e Literatura"];
         const DEFAULT_EXT = ["Palestra", "Excursão", "Viagem", "Visita", "SAEB", "SAESE", "Av. Externa", "Aula Externa", "Dinâmica na Quadra", "Festinha", "Feirinha Pedagógica"];
 
         const SHIFT_PRESETS = {
@@ -435,7 +450,6 @@
             "Tarde": { tempos: ["13:00 - 13:50", "13:50 - 14:40", "14:40 - 15:30", "15:50 - 16:40", "16:40 - 17:30"], intervaloPosicao: 3, intervaloTempo: "15:30 - 15:50" }
         };
 
-        // --- SISTEMA DE MÚLTIPLOS PERFIS ---
         let dbIndex = { active: 'default', profiles: [{ id: 'default', name: 'Turma Principal' }] };
         let currentProfileId = 'default';
 
@@ -452,20 +466,36 @@
         let activeRecursos = [];
         let activeExt = []; 
 
+        function getAutoWeekPeriod() {
+            let curr = new Date();
+            let day = curr.getDay();
+            let distanceToMonday = (day === 0) ? 1 : (day === 6 ? 2 : 1 - day);
+            
+            let mon = new Date(curr);
+            mon.setDate(curr.getDate() + distanceToMonday);
+            
+            let fri = new Date(mon);
+            fri.setDate(mon.getDate() + 4);
+            
+            let pad = n => n.toString().padStart(2, '0');
+            return `${pad(mon.getDate())}/${pad(mon.getMonth()+1)} a ${pad(fri.getDate())}/${pad(fri.getMonth()+1)}`;
+        }
+
         function getDefaultConfig() {
             return {
-                escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: "", turno: "Manhã",
-                tempos: [...SHIFT_PRESETS["Manhã"].tempos],
+                escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: getAutoWeekPeriod(), turno: "Manhã",
+                tempos: JSON.parse(JSON.stringify(SHIFT_PRESETS["Manhã"].tempos)),
                 intervaloPosicao: SHIFT_PRESETS["Manhã"].intervaloPosicao, 
                 intervaloTempo: SHIFT_PRESETS["Manhã"].intervaloTempo,
                 sabAtivo: false, sabEspelha: 0, livros: [],
-                dinamicas: [...DEFAULT_DINAMICAS], recursos: [...DEFAULT_RECURSOS], ext: [...DEFAULT_EXT],
+                dinamicas: JSON.parse(JSON.stringify(DEFAULT_DINAMICAS)), 
+                recursos: JSON.parse(JSON.stringify(DEFAULT_RECURSOS)), 
+                ext: JSON.parse(JSON.stringify(DEFAULT_EXT)),
                 matriz: Array(5).fill().map(() => Array(5).fill("Língua Portuguesa"))
             };
         }
 
         window.onload = () => {
-            // Migração Inteligente e Carregamento
             let savedIndex = localStorage.getItem('planner_index_v2');
             
             if (savedIndex) {
@@ -503,9 +533,9 @@
 
             if (savedConfig) {
                 appConfig = JSON.parse(savedConfig);
-                if(!appConfig.dinamicas) appConfig.dinamicas = [...DEFAULT_DINAMICAS];
-                if(!appConfig.recursos) appConfig.recursos = [...DEFAULT_RECURSOS];
-                if(!appConfig.ext) appConfig.ext = [...DEFAULT_EXT];
+                if(!appConfig.dinamicas) appConfig.dinamicas = JSON.parse(JSON.stringify(DEFAULT_DINAMICAS));
+                if(!appConfig.recursos) appConfig.recursos = JSON.parse(JSON.stringify(DEFAULT_RECURSOS));
+                if(!appConfig.ext) appConfig.ext = JSON.parse(JSON.stringify(DEFAULT_EXT));
             } else {
                 appConfig = getDefaultConfig();
             }
@@ -525,7 +555,6 @@
             localStorage.setItem('plannerData_' + currentProfileId, JSON.stringify(appData));
         }
 
-        // FUNÇÕES DO MODAL DE SWITCH
         function openProfileSwitch() {
             const list = document.getElementById('profiles-list');
             list.innerHTML = '';
@@ -574,12 +603,10 @@
                 localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
                 localStorage.removeItem('plannerConfig_' + id);
                 localStorage.removeItem('plannerData_' + id);
-                openProfileSwitch(); // Re-render lista
+                openProfileSwitch();
             });
         }
 
-
-        // KODULAR E BRIDGE
         window.receberTextoDoKodular = function(texto) { console.log(texto); };
 
         window.handleAndroidBack = function() {
@@ -601,9 +628,17 @@
             if(isFirstRun) return;
             document.getElementById('view-settings').classList.remove('active');
             document.getElementById('view-main').classList.add('active');
+            
+            let profInfo = dbIndex.profiles.find(p => p.id === currentProfileId);
+            document.getElementById('main-title').innerHTML = `
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Planner <span class="header-subtitle" id="current-profile-badge">${profInfo ? profInfo.name : 'Turma'}</span>
+            `;
+
             document.getElementById('btn-back').style.display = 'none';
             document.getElementById('btn-settings').style.display = 'flex';
             document.getElementById('btn-pdf').style.display = 'flex';
+            document.getElementById('btn-profile-switch').style.display = 'flex';
         }
 
         function switchTab(tabId) {
@@ -617,34 +652,58 @@
             activeTab = tabId;
         }
 
-        function formatSlotContent(data) {
-            if(!data) return '<span style="color:#cbd5e1;">Tocar para planejar...</span>';
+        // --- SISTEMA DE FORMATAÇÃO DE TEXTO ORGÂNICO ---
+        function joinOrganic(arr) {
+            if (!arr || arr.length === 0) return "";
+            if (arr.length === 1) return arr[0];
+            return arr.slice(0, -1).join(", ") + " e " + arr[arr.length - 1];
+        }
+
+        function buildOrganicText(data, isPdf = false) {
+            if (!data) return isPdf ? "" : '<span style="color:#cbd5e1;">Tocar para planejar...</span>';
             
-            if(data.isFreeText && data.freeText.trim() !== "") { return data.freeText.replace(/\n/g, '<br>'); }
-            if(data.useExt && data.ext && data.ext.length > 0) { 
-                let extHTML = `<div style="font-weight: 700; color: var(--warning); text-transform: uppercase; margin-top:4px;">${data.ext[0]}</div>`;
-                if(data.extDetails && data.extDetails.trim() !== "") {
-                    extHTML += `<div style="font-size: 0.75rem; color: #b45309; margin-top:2px;">↳ ${data.extDetails}</div>`;
+            if (data.isFreeText && data.freeText.trim() !== "") {
+                return data.freeText.replace(/\n/g, '<br>');
+            }
+            
+            if (data.useExt && data.ext && data.ext.length > 0) { 
+                let extHTML = `<div style="font-weight: 700; color: ${isPdf ? '#b45309' : 'var(--warning)'}; text-transform: uppercase; margin-top: ${isPdf ? '15px' : '4px'}; ${isPdf ? 'text-align: center; font-size: 9pt;' : ''}">${data.ext[0]}</div>`;
+                if (data.extDetails && data.extDetails.trim() !== "") {
+                    extHTML += `<div style="font-size: 0.75rem; color: #b45309; margin-top:2px; ${isPdf ? 'text-align: center;' : ''}">↳ ${data.extDetails}</div>`;
                 }
                 return extHTML;
             }
 
-            let parts = [];
-            if(data.assunto) parts.push(`<b>${data.assunto}</b>`);
-            if(data.dinamicas && data.dinamicas.length > 0) parts = parts.concat(data.dinamicas);
+            let phrases = [];
             
-            let blockResources = [];
-            if(data.useBook && data.bookName) {
+            let header = [];
+            if (data.bncc) header.push(`<span style="color:#0369a1; font-weight:700;">[${data.bncc}]</span>`);
+            if (data.assunto) header.push(`<b>${data.assunto}</b>`);
+            if (header.length > 0) phrases.push(header.join(" "));
+
+            let din = data.dinamicas && data.dinamicas.length > 0 ? joinOrganic(data.dinamicas) : "";
+            
+            let recArr = [];
+            if (data.useBook && data.bookName) {
                 let bk = `Livro ${data.bookName}`;
-                if(data.bookPages) bk += ` (Págs ${data.bookPages})`;
-                blockResources.push(`<span style="color:var(--accent); font-weight:600;">${bk}</span>`);
+                if (data.bookPages) bk += ` (Págs ${data.bookPages})`;
+                recArr.push(`<span style="color:${isPdf ? '#3b82f6' : 'var(--accent)'}; font-weight:600;">${bk}</span>`);
             }
+            if (data.recursos && data.recursos.length > 0) recArr = recArr.concat(data.recursos);
             
-            if(data.recursos && data.recursos.length > 0) blockResources = blockResources.concat(data.recursos);
-            if(blockResources.length > 0) parts.push(blockResources.join(' • '));
+            let rec = recArr.length > 0 ? joinOrganic(recArr) : "";
+
+            if (din && rec) {
+                phrases.push(`${din} com uso de ${rec}`);
+            } else if (din) {
+                phrases.push(din);
+            } else if (rec) {
+                phrases.push(`Uso de ${rec}`);
+            }
+
+            if (phrases.length === 0) return isPdf ? "" : '<span style="color:#cbd5e1;">Aula em branco...</span>';
             
-            if(parts.length === 0) return '<span style="color:#cbd5e1;">Aula em branco...</span>';
-            return parts.join(' <span style="color:var(--text-muted);">|</span> ');
+            return phrases.join(". ") + (phrases.length > 0 && !phrases[phrases.length-1].endsWith('.') ? "." : "");
         }
 
         function renderMainGrid() {
@@ -680,7 +739,7 @@
                     card.onclick = () => openSlotModal(slotId, subject, time);
                     card.innerHTML = `
                         <div class="slot-header"><span>${time}</span><span class="slot-subject">${subject}</span></div>
-                        <div class="slot-content">${formatSlotContent(slotData)}</div>
+                        <div class="slot-content">${buildOrganicText(slotData, false)}</div>
                     `;
                     body.appendChild(card);
                 }
@@ -697,7 +756,6 @@
             }
         }
 
-        // CUSTOMIZAÇÃO DE BOTÕES RÁPIDOS
         function renderCustomList() {
             const cat = document.getElementById('cfg-custom-cat').value;
             const container = document.getElementById('cfg-custom-list');
@@ -725,7 +783,6 @@
         }
         function removeCustomItem(cat, index) { appConfig[cat].splice(index, 1); renderCustomList(); }
 
-        // LIVROS DIDÁTICOS
         function renderBooksList() {
             const container = document.getElementById('cfg-books-list');
             container.innerHTML = '';
@@ -801,12 +858,13 @@
             selectBook.innerHTML = appConfig.livros.map(l => `<option value="${l}">${l}</option>`).join('');
 
             let slotData = appData.contents[id] || { 
-                assunto: "", dinamicas: [], recursos: [], 
+                assunto: "", bncc: "", dinamicas: [], recursos: [], 
                 useBook: false, bookName: "", bookPages: "", 
                 useExt: false, ext: [], extDetails: "", isFreeText: false, freeText: "" 
             };
             
             document.getElementById('slot-assunto').value = slotData.assunto || "";
+            document.getElementById('slot-bncc').value = slotData.bncc || "";
             
             const toggleExt = document.getElementById('slot-ext-toggle');
             toggleExt.checked = slotData.useExt || false;
@@ -837,6 +895,7 @@
         function saveSlot() {
             appData.contents[currentSlotId] = {
                 assunto: document.getElementById('slot-assunto').value.trim(),
+                bncc: document.getElementById('slot-bncc').value.trim(),
                 dinamicas: [...activeDinamicas],
                 recursos: [...activeRecursos],
                 useBook: document.getElementById('slot-book-toggle').checked,
@@ -882,6 +941,8 @@
             
             document.getElementById('btn-settings').style.display = 'none';
             document.getElementById('btn-pdf').style.display = 'none';
+            document.getElementById('btn-profile-switch').style.display = 'none'; 
+            document.getElementById('main-title').innerHTML = 'Configurações';
             
             if(force || isFirstRun) {
                 document.getElementById('btn-back').style.display = 'none';
@@ -892,7 +953,6 @@
                 document.getElementById('settings-footer').style.display = 'flex';
                 document.getElementById('btn-cancel-settings').style.display = 'block';
             }
-            document.getElementById('main-title').innerHTML = 'Configurações';
         }
 
         function renderTimesInputs() {
@@ -994,7 +1054,6 @@
         }
         function executeAlertCallback() { if(alertCallback) alertCallback(); }
 
-        // --- SISTEMA DE GERAÇÃO E ENVIO DE PDF ---
         function getExportHTML() {
             const cols = appConfig.sabAtivo ? 6 : 5;
             const turmaCompleta = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
@@ -1032,30 +1091,10 @@
                     let customBg = "";
                     
                     if(slotData) {
-                        if(slotData.isFreeText && slotData.freeText.trim() !== "") {
-                            contentStr = slotData.freeText.replace(/\n/g, '<br>');
-                        } else if(slotData.useExt && slotData.ext && slotData.ext.length > 0) {
-                            contentStr = `<div style="font-weight: 700; color: #b45309; text-align: center; text-transform: uppercase; margin-top: 15px; font-size: 9pt;">${slotData.ext[0]}</div>`;
-                            if(slotData.extDetails && slotData.extDetails.trim() !== "") {
-                                contentStr += `<div style="font-size: 7.5pt; color: #b45309; text-align: center; margin-top:4px;">↳ ${slotData.extDetails}</div>`;
-                            }
+                        if(slotData.useExt && slotData.ext && slotData.ext.length > 0 && !slotData.isFreeText) {
                             customBg = "background-color: #fef3c7; border-color: #fcd34d;";
-                        } else {
-                            let parts = [];
-                            if(slotData.assunto) parts.push(`<b>${slotData.assunto}</b>`);
-                            if(slotData.dinamicas && slotData.dinamicas.length > 0) parts = parts.concat(slotData.dinamicas);
-                            
-                            let blockResources = [];
-                            if(slotData.useBook && slotData.bookName) {
-                                let bk = `Livro ${slotData.bookName}`;
-                                if(slotData.bookPages) bk += ` (Págs ${slotData.bookPages})`;
-                                blockResources.push(`<span style="color:var(--accent); font-weight:600;">${bk}</span>`);
-                            }
-                            if(slotData.recursos && slotData.recursos.length > 0) blockResources = blockResources.concat(slotData.recursos);
-                            if(blockResources.length > 0) parts.push(blockResources.join(' • '));
-                            
-                            if(parts.length > 0) contentStr = parts.join(' <span style="color:#64748b;">|</span> ');
                         }
+                        contentStr = buildOrganicText(slotData, true);
                     }
                     
                     htmlStr += `
