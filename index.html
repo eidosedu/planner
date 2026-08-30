@@ -149,7 +149,7 @@
             </button>
             <div class="header-title" id="main-title">
                 <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Planner <span class="header-subtitle" id="current-profile-badge">Turma</span>
+                <span>Planner</span> <span class="header-subtitle" id="current-profile-badge">Turma</span>
             </div>
         </div>
         <div class="header-actions">
@@ -450,6 +450,7 @@
             "Tarde": { tempos: ["13:00 - 13:50", "13:50 - 14:40", "14:40 - 15:30", "15:50 - 16:40", "16:40 - 17:30"], intervaloPosicao: 3, intervaloTempo: "15:30 - 15:50" }
         };
 
+        // --- SISTEMA DE MÚLTIPLOS PERFIS BLINDADO ---
         let dbIndex = { active: 'default', profiles: [{ id: 'default', name: 'Turma Principal' }] };
         let currentProfileId = 'default';
 
@@ -499,16 +500,21 @@
             let savedIndex = localStorage.getItem('planner_index_v2');
             
             if (savedIndex) {
-                dbIndex = JSON.parse(savedIndex);
+                try { 
+                    let parsed = JSON.parse(savedIndex); 
+                    if(parsed && parsed.active) dbIndex = parsed;
+                } catch(e) { console.error("Erro no index, recuperando...", e); }
             } else {
                 let oldConfig = localStorage.getItem('plannerConfigFinal');
                 let oldData = localStorage.getItem('plannerDataFinal');
                 
                 if(oldConfig) {
                     localStorage.setItem('plannerConfig_default', oldConfig);
-                    let cfg = JSON.parse(oldConfig);
-                    let nome = (cfg.serie && cfg.turmaLetra) ? `${cfg.serie} ${cfg.turmaLetra}` : 'Turma Principal';
-                    dbIndex.profiles[0].name = nome;
+                    try {
+                        let cfg = JSON.parse(oldConfig);
+                        let nome = (cfg.serie && cfg.turmaLetra) ? `${cfg.serie} ${cfg.turmaLetra}` : 'Turma Principal';
+                        dbIndex.profiles[0].name = nome;
+                    } catch(e) {}
                 } else {
                     isFirstRun = true;
                 }
@@ -517,7 +523,7 @@
                 localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
             }
 
-            currentProfileId = dbIndex.active;
+            currentProfileId = dbIndex.active || 'default';
             loadProfile(currentProfileId);
 
             if (isFirstRun) openModal('modal-welcome');
@@ -530,21 +536,39 @@
 
             let savedConfig = localStorage.getItem('plannerConfig_' + id);
             let savedData = localStorage.getItem('plannerData_' + id);
+            let defaults = getDefaultConfig();
 
             if (savedConfig) {
-                appConfig = JSON.parse(savedConfig);
-                if(!appConfig.dinamicas) appConfig.dinamicas = JSON.parse(JSON.stringify(DEFAULT_DINAMICAS));
-                if(!appConfig.recursos) appConfig.recursos = JSON.parse(JSON.stringify(DEFAULT_RECURSOS));
-                if(!appConfig.ext) appConfig.ext = JSON.parse(JSON.stringify(DEFAULT_EXT));
+                try {
+                    let parsed = JSON.parse(savedConfig);
+                    appConfig = Object.assign({}, defaults, parsed);
+                    
+                    if (!Array.isArray(appConfig.dinamicas)) appConfig.dinamicas = [...defaults.dinamicas];
+                    if (!Array.isArray(appConfig.recursos)) appConfig.recursos = [...defaults.recursos];
+                    if (!Array.isArray(appConfig.ext)) appConfig.ext = [...defaults.ext];
+                    if (!Array.isArray(appConfig.tempos) || appConfig.tempos.length < 5) appConfig.tempos = [...defaults.tempos];
+                    if (!Array.isArray(appConfig.livros)) appConfig.livros = [];
+                    
+                } catch(e) { appConfig = defaults; }
             } else {
-                appConfig = getDefaultConfig();
+                appConfig = defaults;
+            }
+            
+            // Garantia contra matriz vazia ou corrompida (Blindagem do CRASH)
+            if (!Array.isArray(appConfig.matriz)) appConfig.matriz = [];
+            for (let d = 0; d < 5; d++) {
+                if (!Array.isArray(appConfig.matriz[d])) appConfig.matriz[d] = Array(5).fill("Língua Portuguesa");
             }
 
-            if (savedData) appData = JSON.parse(savedData);
-            else appData = { contents: {} };
+            if (savedData) {
+                try { appData = JSON.parse(savedData); } catch(e) { appData = { contents: {} }; }
+            } else {
+                appData = { contents: {} };
+            }
 
             let profInfo = dbIndex.profiles.find(p => p.id === id);
-            document.getElementById('current-profile-badge').innerText = profInfo ? profInfo.name : 'Turma';
+            let badge = document.getElementById('current-profile-badge');
+            if(badge) badge.innerText = profInfo ? profInfo.name : 'Turma';
 
             renderMainGrid();
             buildSettingsMatrix();
@@ -630,10 +654,8 @@
             document.getElementById('view-main').classList.add('active');
             
             let profInfo = dbIndex.profiles.find(p => p.id === currentProfileId);
-            document.getElementById('main-title').innerHTML = `
-                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Planner <span class="header-subtitle" id="current-profile-badge">${profInfo ? profInfo.name : 'Turma'}</span>
-            `;
+            let badge = document.getElementById('current-profile-badge');
+            if (badge) badge.innerText = profInfo ? profInfo.name : 'Turma';
 
             document.getElementById('btn-back').style.display = 'none';
             document.getElementById('btn-settings').style.display = 'flex';
@@ -652,7 +674,6 @@
             activeTab = tabId;
         }
 
-        // --- SISTEMA DE FORMATAÇÃO DE TEXTO ORGÂNICO ---
         function joinOrganic(arr) {
             if (!arr || arr.length === 0) return "";
             if (arr.length === 1) return arr[0];
@@ -718,8 +739,8 @@
                 let body = document.createElement('div');
                 body.className = 'day-body';
                 
-                let sourceDayIndex = (d === 5) ? parseInt(appConfig.sabEspelha) : d;
-                let daySubjects = appConfig.matriz[sourceDayIndex];
+                let sourceDayIndex = (d === 5) ? (parseInt(appConfig.sabEspelha) || 0) : d;
+                let daySubjects = appConfig.matriz[sourceDayIndex] || Array(5).fill("Língua Portuguesa");
 
                 for (let aula = 0; aula < 5; aula++) {
                     if (aula === parseInt(appConfig.intervaloPosicao)) {
@@ -730,8 +751,8 @@
                     }
 
                     let slotId = `d${d}-a${aula}`;
-                    let subject = daySubjects[aula];
-                    let time = appConfig.tempos[aula];
+                    let subject = daySubjects[aula] || "Língua Portuguesa";
+                    let time = (appConfig.tempos && appConfig.tempos[aula]) ? appConfig.tempos[aula] : "00:00";
                     let slotData = appData.contents[slotId];
 
                     let card = document.createElement('div');
@@ -760,7 +781,7 @@
             const cat = document.getElementById('cfg-custom-cat').value;
             const container = document.getElementById('cfg-custom-list');
             container.innerHTML = '';
-            if(appConfig[cat].length === 0) {
+            if(!appConfig[cat] || appConfig[cat].length === 0) {
                 container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding:10px;">Sem itens.</div>';
                 return;
             }
@@ -776,6 +797,7 @@
             const cat = document.getElementById('cfg-custom-cat').value;
             const input = document.getElementById('cfg-new-custom');
             if(input.value.trim()) { 
+                if(!appConfig[cat]) appConfig[cat] = [];
                 appConfig[cat].push(input.value.trim()); 
                 input.value = ''; 
                 renderCustomList(); 
@@ -786,7 +808,7 @@
         function renderBooksList() {
             const container = document.getElementById('cfg-books-list');
             container.innerHTML = '';
-            if(appConfig.livros.length === 0) {
+            if(!appConfig.livros || appConfig.livros.length === 0) {
                 container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding:10px;">Nenhum livro cadastrado.</div>';
                 return;
             }
@@ -799,13 +821,18 @@
         }
         function addBook() {
             const val = document.getElementById('cfg-new-book').value.trim();
-            if(val) { appConfig.livros.push(val); document.getElementById('cfg-new-book').value = ''; renderBooksList(); }
+            if(val) { 
+                if(!appConfig.livros) appConfig.livros = [];
+                appConfig.livros.push(val); 
+                document.getElementById('cfg-new-book').value = ''; 
+                renderBooksList(); 
+            }
         }
         function removeBook(index) { appConfig.livros.splice(index, 1); renderBooksList(); }
 
         function toggleBookSection() {
             const toggle = document.getElementById('slot-book-toggle');
-            if(toggle.checked && appConfig.livros.length === 0) {
+            if(toggle.checked && (!appConfig.livros || appConfig.livros.length === 0)) {
                 customAlert("Aviso", "Cadastre os livros didáticos nas configurações primeiro.");
                 toggle.checked = false; return;
             }
@@ -823,6 +850,7 @@
         function renderModalChips(containerId, sourceList, activeArray, isSingle = false) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
+            if(!sourceList) return;
             sourceList.forEach(item => {
                 let btn = document.createElement('div');
                 btn.className = 'chip';
@@ -855,7 +883,7 @@
             document.getElementById('modal-slot-title').innerText = `${subject} (${time})`;
             
             const selectBook = document.getElementById('slot-book-select');
-            selectBook.innerHTML = appConfig.livros.map(l => `<option value="${l}">${l}</option>`).join('');
+            selectBook.innerHTML = (appConfig.livros || []).map(l => `<option value="${l}">${l}</option>`).join('');
 
             let slotData = appData.contents[id] || { 
                 assunto: "", bncc: "", dinamicas: [], recursos: [], 
@@ -875,7 +903,7 @@
             const toggleBook = document.getElementById('slot-book-toggle');
             toggleBook.checked = slotData.useBook;
             document.getElementById('slot-book-area').style.display = slotData.useBook ? 'flex' : 'none';
-            if(slotData.bookName && appConfig.livros.includes(slotData.bookName)) selectBook.value = slotData.bookName;
+            if(slotData.bookName && (appConfig.livros||[]).includes(slotData.bookName)) selectBook.value = slotData.bookName;
             document.getElementById('slot-book-pages').value = slotData.bookPages || "";
             
             activeDinamicas = slotData.dinamicas ? [...slotData.dinamicas] : [];
@@ -914,26 +942,31 @@
         }
 
         function openSettings(force = false) {
-            document.getElementById('cfg-escola').value = appConfig.escola;
-            document.getElementById('cfg-serie').value = appConfig.serie;
-            document.getElementById('cfg-turma-letra').value = appConfig.turmaLetra;
-            document.getElementById('cfg-turno').value = appConfig.turno;
-            document.getElementById('cfg-periodo').value = appConfig.periodo;
-            document.getElementById('cfg-prof').value = appConfig.prof;
-            document.getElementById('cfg-prof-ed').value = appConfig.profEd;
+            document.getElementById('cfg-escola').value = appConfig.escola || "";
+            document.getElementById('cfg-serie').value = appConfig.serie || "5º Ano";
+            document.getElementById('cfg-turma-letra').value = appConfig.turmaLetra || "";
+            document.getElementById('cfg-turno').value = appConfig.turno || "Manhã";
+            document.getElementById('cfg-periodo').value = appConfig.periodo || "";
+            document.getElementById('cfg-prof').value = appConfig.prof || "";
+            document.getElementById('cfg-prof-ed').value = appConfig.profEd || "";
             
             renderBooksList();
             renderCustomList();
             renderTimesInputs();
             
-            document.getElementById('cfg-int-pos').value = appConfig.intervaloPosicao;
-            document.getElementById('cfg-int-time').value = appConfig.intervaloTempo;
-            document.getElementById('cfg-sab-ativo').checked = appConfig.sabAtivo;
-            document.getElementById('cfg-sab-mirror').value = appConfig.sabEspelha;
+            document.getElementById('cfg-int-pos').value = appConfig.intervaloPosicao || 3;
+            document.getElementById('cfg-int-time').value = appConfig.intervaloTempo || "";
+            document.getElementById('cfg-sab-ativo').checked = appConfig.sabAtivo || false;
+            document.getElementById('cfg-sab-mirror').value = appConfig.sabEspelha || 0;
             toggleSabado();
 
             for(let d=0; d<5; d++){
-                for(let a=0; a<5; a++){ document.getElementById(`sel-d${d}-a${a}`).value = appConfig.matriz[d][a]; }
+                for(let a=0; a<5; a++){ 
+                    let sel = document.getElementById(`sel-d${d}-a${a}`);
+                    if(sel && appConfig.matriz && appConfig.matriz[d]) {
+                        sel.value = appConfig.matriz[d][a] || "Língua Portuguesa"; 
+                    }
+                }
             }
 
             document.getElementById('view-main').classList.remove('active');
@@ -942,7 +975,6 @@
             document.getElementById('btn-settings').style.display = 'none';
             document.getElementById('btn-pdf').style.display = 'none';
             document.getElementById('btn-profile-switch').style.display = 'none'; 
-            document.getElementById('main-title').innerHTML = 'Configurações';
             
             if(force || isFirstRun) {
                 document.getElementById('btn-back').style.display = 'none';
@@ -959,7 +991,8 @@
             let timesCont = document.getElementById('cfg-times-container');
             timesCont.innerHTML = '';
             for(let i=0; i<5; i++) {
-                timesCont.innerHTML += `<div class="form-group"><label>${i+1}ª Aula</label><input type="text" id="cfg-t${i}" class="input-flat" value="${appConfig.tempos[i]}"></div>`;
+                let v = (appConfig.tempos && appConfig.tempos[i]) ? appConfig.tempos[i] : "";
+                timesCont.innerHTML += `<div class="form-group"><label>${i+1}ª Aula</label><input type="text" id="cfg-t${i}" class="input-flat" value="${v}"></div>`;
             }
         }
 
@@ -996,35 +1029,51 @@
         }
 
         function saveSettings() {
-            appConfig.escola = document.getElementById('cfg-escola').value;
-            appConfig.serie = document.getElementById('cfg-serie').value;
-            appConfig.turmaLetra = document.getElementById('cfg-turma-letra').value;
-            appConfig.turno = document.getElementById('cfg-turno').value;
-            appConfig.periodo = document.getElementById('cfg-periodo').value;
-            appConfig.prof = document.getElementById('cfg-prof').value;
-            appConfig.profEd = document.getElementById('cfg-prof-ed').value;
+            try {
+                appConfig.escola = document.getElementById('cfg-escola').value;
+                appConfig.serie = document.getElementById('cfg-serie').value;
+                appConfig.turmaLetra = document.getElementById('cfg-turma-letra').value;
+                appConfig.turno = document.getElementById('cfg-turno').value;
+                appConfig.periodo = document.getElementById('cfg-periodo').value;
+                appConfig.prof = document.getElementById('cfg-prof').value;
+                appConfig.profEd = document.getElementById('cfg-prof-ed').value;
 
-            for(let i=0; i<5; i++) appConfig.tempos[i] = document.getElementById(`cfg-t${i}`).value;
-            appConfig.intervaloPosicao = document.getElementById('cfg-int-pos').value;
-            appConfig.intervaloTempo = document.getElementById('cfg-int-time').value;
-            appConfig.sabAtivo = document.getElementById('cfg-sab-ativo').checked;
-            appConfig.sabEspelha = document.getElementById('cfg-sab-mirror').value;
+                if (!Array.isArray(appConfig.tempos)) appConfig.tempos = [];
+                for(let i=0; i<5; i++) {
+                    let input = document.getElementById(`cfg-t${i}`);
+                    if(input) appConfig.tempos[i] = input.value;
+                }
+                
+                appConfig.intervaloPosicao = document.getElementById('cfg-int-pos').value;
+                appConfig.intervaloTempo = document.getElementById('cfg-int-time').value;
+                appConfig.sabAtivo = document.getElementById('cfg-sab-ativo').checked;
+                appConfig.sabEspelha = document.getElementById('cfg-sab-mirror').value;
 
-            for(let d=0; d<5; d++) {
-                for(let a=0; a<5; a++) { appConfig.matriz[d][a] = document.getElementById(`sel-d${d}-a${a}`).value; }
+                if (!Array.isArray(appConfig.matriz)) appConfig.matriz = [];
+                
+                for(let d=0; d<5; d++) {
+                    if(!Array.isArray(appConfig.matriz[d])) appConfig.matriz[d] = [];
+                    for(let a=0; a<5; a++) { 
+                        let sel = document.getElementById(`sel-d${d}-a${a}`);
+                        if(sel) appConfig.matriz[d][a] = sel.value; 
+                    }
+                }
+
+                let pIndex = dbIndex.profiles.findIndex(p => p.id === currentProfileId);
+                if(pIndex !== -1 && appConfig.serie) {
+                    dbIndex.profiles[pIndex].name = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
+                    localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
+                }
+
+                saveCurrentProfile();
+                isFirstRun = false;
+                renderMainGrid();
+                navigateBack();
+                
+            } catch (e) {
+                console.error("Erro ao salvar configurações: ", e);
+                customAlert("Erro Crítico", "Falha de gravação! A memória da página foi restaurada para evitar perda de dados. Limpe o cache do navegador se o erro persistir.");
             }
-
-            let pIndex = dbIndex.profiles.findIndex(p => p.id === currentProfileId);
-            if(pIndex !== -1 && appConfig.serie) {
-                dbIndex.profiles[pIndex].name = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
-                localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
-                document.getElementById('current-profile-badge').innerText = dbIndex.profiles[pIndex].name;
-            }
-
-            saveCurrentProfile();
-            isFirstRun = false;
-            renderMainGrid();
-            navigateBack();
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -1062,12 +1111,12 @@
             <div style="padding: 10px; font-family: sans-serif; font-size: 8pt; width: 1080px; background: #fff; color: #000;">
                 <div style="background:#0f172a; color:#fff; padding: 10px 15px; border-radius:6px; display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div>
-                        <div style="font-size: 7pt; color:#38bdf8; font-weight:bold; text-transform:uppercase;">${appConfig.escola}</div>
-                        <div style="font-size: 11pt; font-weight:bold; margin-top:2px;">PLANNER SEMANAL — ${turmaCompleta} (${appConfig.turno})</div>
+                        <div style="font-size: 7pt; color:#38bdf8; font-weight:bold; text-transform:uppercase;">${appConfig.escola || ''}</div>
+                        <div style="font-size: 11pt; font-weight:bold; margin-top:2px;">PLANNER SEMANAL — ${turmaCompleta} (${appConfig.turno || ''})</div>
                     </div>
                     <div style="text-align:right; font-size:8pt; line-height:1.4;">
-                        Regente: <b>${appConfig.prof}</b> | Ed. Física: <b>${appConfig.profEd}</b><br>
-                        Semana: <b>${appConfig.periodo}</b>
+                        Regente: <b>${appConfig.prof || ''}</b> | Ed. Física: <b>${appConfig.profEd || ''}</b><br>
+                        Semana: <b>${appConfig.periodo || ''}</b>
                     </div>
                 </div>
                 <div style="display:flex; gap:8px;">
@@ -1078,14 +1127,16 @@
                     <div style="background:#334155; color:#fff; text-align:center; padding:5px; font-weight:bold; font-size:8.5pt;">${DAYS_NAMES[d].toUpperCase()}</div>
                     <div style="padding:4px;">`;
                 
-                let sourceD = (d === 5) ? parseInt(appConfig.sabEspelha) : d;
+                let sourceD = (d === 5) ? (parseInt(appConfig.sabEspelha) || 0) : d;
+                let daySubjects = appConfig.matriz[sourceD] || Array(5).fill("");
                 
                 for(let a=0; a<5; a++) {
                     if (a === parseInt(appConfig.intervaloPosicao)) {
-                        htmlStr += `<div style="text-align:center; background:#f1f5f9; font-size:6.5pt; font-weight:bold; padding:2px; margin:3px 0; border:1px dashed #cbd5e1; border-radius:3px;">${appConfig.intervaloTempo} • INTERVALO</div>`;
+                        htmlStr += `<div style="text-align:center; background:#f1f5f9; font-size:6.5pt; font-weight:bold; padding:2px; margin:3px 0; border:1px dashed #cbd5e1; border-radius:3px;">${appConfig.intervaloTempo || ''} • INTERVALO</div>`;
                     }
                     
-                    let subject = appConfig.matriz[sourceD][a];
+                    let subject = daySubjects[a] || "";
+                    let time = (appConfig.tempos && appConfig.tempos[a]) ? appConfig.tempos[a] : "";
                     let slotData = appData.contents[`d${d}-a${a}`];
                     let contentStr = "";
                     let customBg = "";
@@ -1100,7 +1151,7 @@
                     htmlStr += `
                     <div style="border:1px solid #e2e8f0; border-radius:3px; padding:4px; margin-bottom:4px; height: 95px; overflow:hidden; display:flex; flex-direction:column; ${customBg}">
                         <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:2px; margin-bottom:4px; font-size:6.5pt; font-weight:bold;">
-                            <span style="color:#64748b;">${appConfig.tempos[a]}</span>
+                            <span style="color:#64748b;">${time}</span>
                             <span style="color:#0369a1;">${subject}</span>
                         </div>
                         <div style="font-size:7pt; line-height:1.2; flex:1;">${contentStr}</div>
@@ -1108,7 +1159,7 @@
                 }
                 
                 if (5 === parseInt(appConfig.intervaloPosicao)) {
-                    htmlStr += `<div style="text-align:center; background:#f1f5f9; font-size:6.5pt; font-weight:bold; padding:2px; margin:3px 0; border:1px dashed #cbd5e1; border-radius:3px;">${appConfig.intervaloTempo} • INTERVALO</div>`;
+                    htmlStr += `<div style="text-align:center; background:#f1f5f9; font-size:6.5pt; font-weight:bold; padding:2px; margin:3px 0; border:1px dashed #cbd5e1; border-radius:3px;">${appConfig.intervaloTempo || ''} • INTERVALO</div>`;
                 }
                 htmlStr += `</div></div>`;
             }
