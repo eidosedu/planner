@@ -15,78 +15,101 @@
             --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05); --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         html, body { width: 100%; height: 100%; overflow: hidden; background-color: var(--bg); }
-        body { 
-            color: var(--text); 
-            height: 100dvh; 
-            display: flex; flex-direction: column; 
-        }
-        @supports (-webkit-touch-callout: none) {
-            body { height: -webkit-fill-available; }
-        }
+        body { color: var(--text); height: 100dvh; display: flex; flex-direction: column; }
+        @supports (-webkit-touch-callout: none) { body { height: -webkit-fill-available; } }
 
         header { background-color: var(--surface); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 50; min-height: 60px; flex-shrink: 0;}
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .header-title { font-size: 1.15rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;}
-        .header-subtitle { font-size: 0.75rem; color: var(--accent); background: var(--surface-hover); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600;}
-        .header-actions { display: flex; gap: 8px; }
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;}
+        .header-title { font-size: 1.1rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .header-subtitle { font-size: 0.7rem; color: var(--accent); background: var(--surface-hover); padding: 2px 6px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;}
+        .header-actions { display: flex; gap: 6px; flex-shrink: 0;}
 
         button { border: none; outline: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; background: transparent; gap: 6px; font-size: 0.9rem;}
-        .btn-icon { width: 40px; height: 40px; border-radius: 8px; color: var(--text-muted); background-color: var(--surface-hover); padding: 0; display: flex; align-items: center; justify-content: center;}
+        .btn-icon { width: 40px; height: 40px; border-radius: 8px; color: var(--text-muted); background-color: var(--surface-hover); padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
         .btn-icon svg { width: 20px; height: 20px; display: block; }
         .btn-icon:hover { background-color: var(--surface-active); color: var(--text); }
         
         .btn-primary { padding: 0 16px; height: 40px; border-radius: 8px; background-color: var(--accent); color: white; font-weight: 600; display: flex; align-items: center; gap: 8px;}
-        .btn-primary svg { width: 18px; height: 18px; }
+        .btn-primary svg { width: 18px; height: 18px; margin: 0; }
         .btn-primary:hover { background-color: var(--accent-hover); }
         .btn-outline { padding: 0 16px; height: 40px; border-radius: 8px; border: 1px solid var(--border); color: var(--text); font-weight: 600; background: var(--surface); }
         .btn-outline:hover { background-color: var(--surface-hover); }
 
-        .view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; flex-direction: column; position: relative; }
+        .hide-text-mobile { display: none; }
+        .desktop-mode .hide-text-mobile { display: inline; }
+
+        .view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; position: relative; }
         .view.active { display: flex; }
 
-        .week-container { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding-bottom: 20px; align-items: flex-start; }
-        .day-col { flex: 1; min-width: 250px; background-color: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-sm); }
-        .day-header { background-color: var(--surface-active); padding: 10px; text-align: center; font-weight: 700; font-size: 1rem; border-bottom: 1px solid var(--border); }
-        .day-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+        /* --- ARQUITETURA RESPONSIVA UNIFICADA --- */
+        /* 1. Base (Mobile / Vertical) */
+        .day-tabs { display: flex; overflow-x: auto; gap: 8px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; scroll-behavior: smooth; }
+        .day-tabs::-webkit-scrollbar { display: none; }
+        .day-tab { padding: 8px 18px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+        .day-tab.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: var(--shadow-sm); }
+        
+        .week-container { display: flex; flex-direction: column; flex: 1; overflow-y: auto; padding: 0;}
+        
+        .day-col { display: none; flex-direction: column; flex: 1; overflow-y: auto; background: transparent; border: none; padding: 0;}
+        .day-col.active { display: flex; }
+        .day-header { display: none; }
+        .day-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 
-        .slot-card { border: 1px solid var(--border); border-radius: 6px; padding: 10px; cursor: pointer; background-color: var(--surface-hover); min-height: 90px; display: flex; flex-direction: column; position: relative; z-index: 1;}
-        .slot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); z-index: 2;}
-        .slot-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px;}
+        .slot-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; background-color: var(--surface); min-height: 90px; display: flex; flex-direction: column; position: relative; z-index: 1; box-shadow: var(--shadow-sm);}
+        .slot-card:active, .slot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); z-index: 2;}
+        
+        .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 8px; border: 1px dashed var(--border); border-radius: 8px; margin: 4px 0; background-color: var(--surface-hover); pointer-events: none;}
+        
+        #matrix-container { display: flex; flex-direction: column; gap: 12px; }
+        .form-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        /* 2. Modificadores Desktop (Aplicado via JS com a classe .desktop-mode no body) */
+        .desktop-mode .day-tabs { display: none; }
+        .desktop-mode .week-container { flex-direction: row; gap: 12px; overflow-x: auto; overflow-y: hidden; padding: 16px; align-items: flex-start; }
+        
+        .desktop-mode .day-col { display: flex; flex: 1; min-width: 250px; background-color: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); padding: 0;}
+        .desktop-mode .day-header { display: block; background-color: var(--surface-active); padding: 10px; text-align: center; font-weight: 700; font-size: 1rem; border-bottom: 1px solid var(--border); }
+        .desktop-mode .day-body { padding: 10px; gap: 8px; }
+        
+        .desktop-mode .slot-card { background-color: var(--surface-hover); padding: 10px; border-radius: 6px; box-shadow: none; }
+        .desktop-mode .interval { padding: 6px; border-radius: 6px; background-color: var(--bg); margin: 4px 0;}
+        
+        .desktop-mode #matrix-container { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; }
+        .desktop-mode .day-matrix-card { flex: 1; min-width: 180px; }
+        .desktop-mode .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        /* -------------------------------------- */
+
+        .slot-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;}
         .slot-subject { color: var(--accent); }
-        .slot-content { font-size: 0.8rem; color: var(--text); flex: 1; line-height: 1.4; display: flex; flex-direction: column; gap: 4px;}
-        
-        .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 6px; border: 1px dashed var(--border); border-radius: 6px; margin: 4px 0; background-color: var(--bg); pointer-events: none;}
+        .slot-content { font-size: 0.85rem; color: var(--text); flex: 1; line-height: 1.4; display: flex; flex-direction: column; gap: 4px;}
 
-        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px; padding-bottom: 100px; } 
-        .settings-section { background-color: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-        .settings-section h3 { font-size: 1.1rem; border-bottom: 2px solid var(--surface-active); padding-bottom: 8px; margin-bottom: 16px; color: var(--text); }
+        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; padding: 16px; padding-bottom: 100px; } 
+        .settings-section { background-color: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .settings-section h3 { font-size: 1.05rem; border-bottom: 2px solid var(--surface-active); padding-bottom: 8px; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 6px;}
         
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
         
-        .input-flat { padding: 10px; border: 1px solid var(--border); border-radius: 6px; background-color: var(--bg); color: var(--text); font-size: 0.9rem; outline: none; transition: border 0.2s; width: 100%;}
+        .input-flat { padding: 12px 10px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s; width: 100%; max-width: 100%;}
         .input-flat:focus { border-color: var(--accent); }
-        select.input-flat { cursor: pointer; appearance: auto; }
-
-        .form-row-compact { display: flex; gap: 10px; }
-        .form-row-compact > div { flex: 1; }
+        select.input-flat { cursor: pointer; appearance: auto; text-overflow: ellipsis; }
 
         .list-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-hover); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.9rem;}
+        .list-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-hover); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem;}
         .list-item-btn { color: var(--danger); background: transparent; padding: 4px; border-radius: 4px; }
         .list-item-btn:hover { background: var(--surface-active); }
 
-        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .matrix-table th, .matrix-table td { border: 1px solid var(--border); padding: 6px; text-align: center; }
-        .matrix-table th { background-color: var(--surface-hover); font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-        .matrix-table select { width: 100%; padding: 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); cursor: pointer;}
+        .day-matrix-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--bg); }
+        .day-matrix-title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 10px; text-transform: uppercase;}
+        .matrix-slot-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .matrix-slot-row:last-child { margin-bottom: 0; }
+        .matrix-slot-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); width: 35px; flex-shrink: 0;}
 
-        .check-group { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;}
-        .check-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+        .check-group { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;}
+        .check-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
         
         .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: var(--surface-hover); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;}
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;}
@@ -96,12 +119,18 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
+        .stepper-group { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); height: 42px;}
+        .stepper-btn { background: var(--surface-hover); border: none; width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: var(--text); }
+        .stepper-btn:active { background: var(--surface-active); }
+        .stepper-input { border: none; width: 50px; text-align: center; font-size: 1rem; outline: none; background: transparent; -moz-appearance: textfield;}
+        .stepper-input::-webkit-outer-spin-button, .stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
         .settings-bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 999; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
-        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90dvh; overflow: hidden; position: relative;}
+        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 550px; max-width: 92%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90dvh; overflow: hidden; position: relative;}
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 16px; flex-shrink: 0;}
@@ -112,7 +141,7 @@
         .welcome-icon { width: 64px; height: 64px; color: var(--accent); margin: 0 auto 16px auto; }
         .welcome-icon svg { width: 100%; height: 100%; display: block; }
 
-        .tabs-header { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background-color: var(--surface);}
+        .tabs-header { display: flex; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); flex-shrink: 0; background-color: var(--surface); margin: 0 -16px 4px -16px;}
         .tab-btn { flex: 1; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background-color: var(--surface-hover); }
         
@@ -120,21 +149,21 @@
         .tab-content.active { display: flex; }
 
         .section-label { font-size: 0.85rem; font-weight: 700; color: var(--text); border-bottom: 2px solid var(--surface-active); padding-bottom: 4px; margin-bottom: 8px;}
-        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .chip { padding: 6px 14px; border-radius: 16px; background-color: var(--surface-hover); border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s;}
+        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .chip { padding: 8px 14px; border-radius: 20px; background-color: var(--surface-hover); border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s;}
         .chip.active { background-color: var(--accent); color: white; border-color: var(--accent); }
         
         .chip.external { border-color: var(--warning); color: var(--warning); background: transparent; }
         .chip.external.active { background-color: var(--warning); color: white; border-color: var(--warning); }
 
-        #slot-book-area { display: none; flex-direction: column; gap: 10px; background-color: var(--bg); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 16px;}
+        #slot-book-area { display: none; flex-direction: column; gap: 12px; background-color: var(--bg); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 16px;}
 
-        textarea { width: 100%; height: 250px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
+        textarea { width: 100%; height: 200px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
         textarea:focus { border-color: var(--accent); }
 
         .profile-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--surface-hover); cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
         .profile-item.active { background-color: #eff6ff; border-color: var(--accent); }
-        .profile-item:hover { border-color: var(--accent); }
+        .profile-item:active { border-color: var(--accent); }
 
         #pdf-export-container { display: none; }
         svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -148,8 +177,9 @@
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <div class="header-title" id="main-title">
-                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Planner</span> <span class="header-subtitle" id="current-profile-badge">Turma</span>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; flex-shrink: 0;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>Planner</span> 
+                <span class="header-subtitle" id="current-profile-badge">Turma</span>
             </div>
         </div>
         <div class="header-actions">
@@ -159,37 +189,40 @@
             <button class="btn-icon" onclick="openSettings()" id="btn-settings" title="Configurações">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
-            <button class="btn-primary" onclick="acionarGeracaoPDF()" id="btn-pdf">
+            <button class="btn-primary" onclick="acionarGeracaoPDF()" id="btn-pdf" style="padding: 0 12px;">
                 <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Gerar PDF
+                <span class="hide-text-mobile">Gerar PDF</span>
             </button>
         </div>
     </header>
 
     <div id="view-main" class="view active">
-        <div class="week-container" id="week-grid"></div>
+        <!-- Renderizado dinamicamente via JS (Híbrido) -->
     </div>
 
     <!-- VIEW: SETTINGS -->
-    <div id="view-settings" class="view" style="padding-bottom: 0;">
+    <div id="view-settings" class="view" style="padding: 0;">
         <div class="settings-container">
             
             <div class="settings-section">
-                <h3>Informações Básicas</h3>
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Informações Básicas
+                </h3>
                 <div class="form-grid">
                     <div class="form-group"><label>Escola</label><input type="text" id="cfg-escola" class="input-flat" placeholder="Ex: EMEF Machado de Assis"></div>
                     
-                    <div class="form-row-compact">
-                        <div class="form-group">
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex:1;">
                             <label>Série/Ano</label>
                             <select id="cfg-serie" class="input-flat">
                                 <option value="1º Ano">1º Ano</option><option value="2º Ano">2º Ano</option>
                                 <option value="3º Ano">3º Ano</option><option value="4º Ano">4º Ano</option><option value="5º Ano">5º Ano</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Turma (Letra)</label><input type="text" id="cfg-turma-letra" class="input-flat" placeholder="Ex: A, B, C" maxlength="2"></div>
+                        <div class="form-group" style="flex:1;"><label>Turma (Letra)</label><input type="text" id="cfg-turma-letra" class="input-flat" placeholder="Ex: A, B, C" maxlength="2"></div>
                     </div>
-
+                    
                     <div class="form-group">
                         <label>Turno</label>
                         <select id="cfg-turno" class="input-flat" onchange="updateShiftPresets()">
@@ -202,10 +235,19 @@
                         <label>Período da Semana</label>
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="cfg-periodo" class="input-flat" placeholder="Ex: 01/08 a 05/08" style="flex: 1;">
-                            <button class="btn-outline" onclick="document.getElementById('cfg-periodo').value = getAutoWeekPeriod();" title="Preencher com a Semana Atual" style="padding: 0 12px;">
-                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; color: var(--accent);"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <button class="btn-outline" onclick="document.getElementById('cfg-periodo').value = getAutoWeekPeriod();" title="Preencher com a Semana Atual" style="padding: 0 14px;">
+                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; color: var(--accent); margin:0;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                             </button>
                         </div>
+                    </div>
+
+                    <div class="form-group" style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 4px;">
+                        <label>Modo de Visualização (Layout)</label>
+                        <select id="cfg-view-mode" class="input-flat" onchange="livePreviewMode(this.value)">
+                            <option value="auto">Automático (Adapta à tela do aparelho)</option>
+                            <option value="mobile">Forçar Vertical (Abas Dia a Dia)</option>
+                            <option value="desktop">Forçar Horizontal (Colunas Lado a Lado)</option>
+                        </select>
                     </div>
                     
                     <div class="form-group"><label>Prof. Regente</label><input type="text" id="cfg-prof" class="input-flat"></div>
@@ -214,10 +256,13 @@
             </div>
 
             <div class="settings-section">
-                <h3>Personalizar Opções (Preenchimento Rápido)</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Crie ou remova itens que aparecem como botões clicáveis no modal de aula.</p>
-                <div class="form-row-compact" style="margin-bottom: 8px;">
-                    <select id="cfg-custom-cat" class="input-flat" onchange="renderCustomList()" style="flex: 1;">
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    Opções de Preenchimento
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Crie ou remova itens que aparecem como botões clicáveis no modal de aula.</p>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <select id="cfg-custom-cat" class="input-flat" onchange="renderCustomList()">
                         <option value="dinamicas">Dinâmicas e Abordagens</option>
                         <option value="recursos">Recursos e Materiais</option>
                         <option value="ext">Eventos Externos / Atípicos</option>
@@ -225,22 +270,28 @@
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="cfg-new-custom" class="input-flat" placeholder="Nome do item..." style="flex: 1;">
-                    <button class="btn-primary" onclick="addCustomItem()"><svg viewBox="0 0 24 24" style="margin-right:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                    <button class="btn-primary" style="padding: 0 14px;" onclick="addCustomItem()"><svg viewBox="0 0 24 24" style="margin:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                 </div>
-                <div class="list-container" id="cfg-custom-list" style="max-height: 180px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 6px; padding: 4px; background: var(--bg);"></div>
+                <div class="list-container" id="cfg-custom-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: var(--bg);"></div>
             </div>
 
             <div class="settings-section">
-                <h3>Livros Didáticos (PNLD / Editoras)</h3>
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Livros Didáticos (PNLD)
+                </h3>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="cfg-new-book" class="input-flat" placeholder="Nome do Livro ou Coleção" style="flex: 1;">
-                    <button class="btn-primary" onclick="addBook()"><svg viewBox="0 0 24 24" style="margin-right:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                    <button class="btn-primary" style="padding: 0 14px;" onclick="addBook()"><svg viewBox="0 0 24 24" style="margin:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                 </div>
-                <div class="list-container" id="cfg-books-list" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
+                <div class="list-container" id="cfg-books-list" style="max-height: 180px; overflow-y: auto; margin-top: 10px;"></div>
             </div>
 
             <div class="settings-section">
-                <h3>Horários das Aulas (5 Tempos)</h3>
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Horários das Aulas
+                </h3>
                 <div class="form-grid" id="cfg-times-container"></div>
                 <div class="form-grid" style="margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px;">
                     <div class="form-group">
@@ -254,11 +305,14 @@
             </div>
 
             <div class="settings-section">
-                <h3>Sábado Letivo</h3>
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Sábado Letivo
+                </h3>
                 <div class="form-grid">
                     <label class="check-group">
                         <input type="checkbox" id="cfg-sab-ativo" onchange="toggleSabado()">
-                        <span style="font-size: 0.9rem; font-weight: 600;">Ativar Sábado Letivo na Grade</span>
+                        <span style="font-size: 0.95rem; font-weight: 600;">Ativar Sábado Letivo na Grade</span>
                     </label>
                     <div class="form-group" id="cfg-sab-mirror-group" style="opacity: 0.5; pointer-events: none;">
                         <label>Copiar disciplinas de qual dia?</label>
@@ -269,21 +323,41 @@
                 </div>
             </div>
 
+            <!-- MATRIZ UNIFICADA -->
             <div class="settings-section">
-                <h3>Matriz Curricular</h3>
-                <div style="overflow-x: auto;">
-                    <table class="matrix-table">
-                        <thead><tr><th>AULA</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead>
-                        <tbody id="matrix-body"></tbody>
-                    </table>
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    Matriz Curricular
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Defina as disciplinas fixas de cada dia da semana.</p>
+                <div id="matrix-container">
+                    <!-- Preenchido via JS (Vira lista no mobile, e Cards em Linha no desktop) -->
                 </div>
             </div>
 
+            <div class="settings-section">
+                <h3>
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Backup e Restauração
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Exporte seus dados para transferir para outro dispositivo ou guarde por segurança.</p>
+                <div style="display: flex; gap: 10px; flex-direction: column;">
+                    <button class="btn-outline" style="border-color: var(--accent); color: var(--accent);" onclick="exportData()">
+                        <svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Exportar Backup (JSON)
+                    </button>
+                    <button class="btn-outline" style="border-color: var(--warning); color: var(--warning);" onclick="triggerImport()">
+                        <svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Restaurar de um Backup
+                    </button>
+                    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+                </div>
+            </div>
         </div>
         
         <div class="settings-bottom-bar" id="settings-footer">
-            <button class="btn-outline" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
-            <button class="btn-primary" onclick="saveSettings()">Salvar Configurações</button>
+            <button class="btn-outline" style="flex:1;" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
+            <button class="btn-primary" style="flex:1;" onclick="saveSettings()">Salvar</button>
         </div>
     </div>
 
@@ -297,17 +371,15 @@
                 </h3>
                 <button class="btn-icon" onclick="closeModal('modal-switch')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
-            
             <div class="modal-body">
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Selecione uma turma existente para carregar a grade:</div>
                 <div id="profiles-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
             </div>
-
             <div class="modal-footer" style="flex-direction: column; align-items: stretch; background: var(--surface-hover);">
-                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px;">Criar Nova Turma (Em Branco)</div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 6px;">Criar Nova Turma (Em Branco)</div>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="new-profile-name" class="input-flat" placeholder="Ex: 5º Ano B (Tarde)" style="flex: 1;">
-                    <button class="btn-primary" onclick="createNewProfile()">Adicionar</button>
+                    <button class="btn-primary" onclick="createNewProfile()">Criar</button>
                 </div>
             </div>
         </div>
@@ -316,49 +388,48 @@
     <!-- MODAL: WELCOME -->
     <div class="modal-overlay" id="modal-welcome">
         <div class="modal-content" style="width: 400px; padding: 40px 20px; text-align: center;">
-            <div class="welcome-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
+            <div class="welcome-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
             <h3 style="font-size: 1.5rem; margin-bottom: 10px;">Bem-vindo ao Planner!</h3>
-            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.4;">
-                Para começar, precisamos configurar a sua grade de aulas, horários e turma.
-            </p>
+            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.4;">Para começar, precisamos configurar a sua grade de aulas, horários e turma.</p>
             <button class="btn-primary" style="width: 100%; justify-content: center; height: 48px; font-size: 1rem;" onclick="closeModal('modal-welcome'); openSettings(true);">Configurar Minha Grade</button>
         </div>
     </div>
 
     <!-- MODAL: EDIÇÃO DE AULA -->
     <div class="modal-overlay" id="modal-slot" onclick="handleOverlayClick(event, 'modal-slot')">
-        <div class="modal-content">
+        <div class="modal-content" style="height: 95dvh; max-height: 95dvh;">
             
             <div class="modal-header">
-                <h3 id="modal-slot-title" style="font-size: 1.1rem;">Editar Aula</h3>
+                <h3 id="modal-slot-title" style="font-size: 1.05rem;">Editar Aula</h3>
                 <button class="btn-icon" onclick="closeModal('modal-slot')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             
-            <div class="tabs-header">
-                <div class="tab-btn active" onclick="switchTab('tab-rapido')" id="btn-tab-rapido">Preenchimento Rápido</div>
-                <div class="tab-btn" onclick="switchTab('tab-livre')" id="btn-tab-livre">Texto Livre</div>
-            </div>
+            <div class="modal-body" style="padding-bottom: 16px;">
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
+                        <span>Competência / Cód. BNCC</span>
+                        <span id="bncc-status-badge" style="font-size: 0.7rem; background:#e0f2fe; padding:2px 6px; border-radius:4px;">Carregando...</span>
+                    </label>
+                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection()" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
+                </div>
 
-            <div class="modal-body">
-                <div class="tab-content active" id="tab-rapido">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label>Assunto / Conteúdo</label>
+                    <input type="text" id="slot-assunto" class="input-flat" placeholder="Ex: Frações, Leitura..." oninput="isDirty=true;">
+                </div>
+
+                <div class="tabs-header">
+                    <div class="tab-btn active" onclick="switchTab('tab-rapido')" id="btn-tab-rapido">Montagem Rápida</div>
+                    <div class="tab-btn" onclick="switchTab('tab-livre')" id="btn-tab-livre">Texto Livre</div>
+                </div>
+
+                <div class="tab-content active" id="tab-rapido" style="padding-top: 8px;">
                     
-                    <div class="form-row-compact">
-                        <div class="form-group">
-                            <label>Assunto / Conteúdo (Opcional)</label>
-                            <input type="text" id="slot-assunto" class="input-flat" placeholder="Ex: Frações, Leitura..." oninput="isDirty=true;">
-                        </div>
-                        <div class="form-group">
-                            <label>Cód. / Competência (BNCC)</label>
-                            <input type="text" id="slot-bncc" class="input-flat" placeholder="Ex: EF05LP01" oninput="isDirty=true;">
-                        </div>
-                    </div>
-
                     <div class="switch-container" style="margin-bottom: 0; background-color: var(--warning-light, #fffbeb); border-color: var(--warning);">
                         <div>
-                            <span style="font-weight: 600; font-size: 0.9rem; display: block; color: var(--text);">Evento Externo / Atípico</span>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">Sobrescreve a aula normal no PDF</span>
+                            <span style="font-weight: 700; font-size: 0.9rem; display: block; color: var(--text);">Evento Externo / Atípico</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Sobrescreve opções de recursos</span>
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="slot-ext-toggle" onchange="toggleExtSection()">
@@ -366,26 +437,27 @@
                         </label>
                     </div>
 
-                    <div id="slot-ext-area" style="display: none; flex-direction: column; gap: 8px; padding: 12px; background: var(--bg); border: 1px dashed var(--warning); border-radius: 8px;">
+                    <div id="slot-ext-area" style="display: none; flex-direction: column; gap: 12px; padding: 16px 12px; background: var(--bg); border: 1px dashed var(--warning); border-radius: 8px; margin-top: 10px;">
                         <div class="section-label" style="border-bottom-color: var(--warning); color: var(--warning);">Selecione o Evento</div>
-                        <div class="chips-container" id="chips-ext" style="margin-bottom: 8px;"></div>
+                        <div class="chips-container" id="chips-ext" style="margin-bottom: 4px;"></div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label style="color: var(--warning);">Detalhes (Opcional)</label>
                             <input type="text" id="slot-ext-details" class="input-flat" placeholder="Ex: Local da visita, Tema da feira..." oninput="isDirty=true;" style="border-color: var(--warning);">
                         </div>
                     </div>
 
-                    <div id="slot-normal-area" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                    <div id="slot-normal-area" style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
                         <div>
                             <div class="section-label">Dinâmica e Abordagem</div>
                             <div class="chips-container" id="chips-dinamicas"></div>
+                            <input type="text" id="slot-dinamica-desc" class="input-flat" placeholder="Detalhes da dinâmica..." oninput="isDirty=true;" style="font-size: 0.85rem; padding: 10px; margin-top: 4px;">
                         </div>
 
                         <div>
                             <div class="section-label">Recursos e Materiais</div>
                             
                             <div class="switch-container" style="margin-top: 4px;">
-                                <div><span style="font-weight: 600; font-size: 0.9rem; display: block;">Usar Livro Didático</span></div>
+                                <div><span style="font-weight: 700; font-size: 0.9rem; display: block;">Usar Livro Didático</span></div>
                                 <label class="switch">
                                     <input type="checkbox" id="slot-book-toggle" onchange="toggleBookSection()">
                                     <span class="slider"></span>
@@ -399,38 +471,51 @@
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Páginas trabalhadas</label>
-                                    <input type="text" id="slot-book-pages" class="input-flat" placeholder="Ex: 45 a 48" oninput="isDirty=true;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                                        <div class="stepper-group">
+                                            <button class="stepper-btn" onclick="stepPage('start', -1)">-</button>
+                                            <input type="number" id="slot-book-page-start" class="stepper-input" oninput="syncPages(); isDirty=true;" value="">
+                                            <button class="stepper-btn" onclick="stepPage('start', 1)">+</button>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;">até</span>
+                                        <div class="stepper-group">
+                                            <button class="stepper-btn" onclick="stepPage('end', -1)">-</button>
+                                            <input type="number" id="slot-book-page-end" class="stepper-input" oninput="isDirty=true;" value="">
+                                            <button class="stepper-btn" onclick="stepPage('end', 1)">+</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="chips-container" id="chips-recursos"></div>
+                            <input type="text" id="slot-recurso-desc" class="input-flat" placeholder="Detalhes do recurso..." oninput="isDirty=true;" style="font-size: 0.85rem; padding: 10px; margin-top: 4px;">
                         </div>
                     </div>
                 </div>
 
-                <div class="tab-content" id="tab-livre">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-                        O que for digitado aqui <b>substituirá</b> as abas de preenchimento rápido e eventos no PDF.
+                <div class="tab-content" id="tab-livre" style="padding-top: 8px;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;">
+                        Use este espaço para digitar o desenvolvimento da aula. <b>Ele será adicionado logo abaixo do Assunto/BNCC.</b>
                     </div>
                     <textarea id="slot-textarea" placeholder="Digite os detalhes da aula..." oninput="isDirty=true;"></textarea>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <button class="btn-outline" onclick="closeModal('modal-slot')">Cancelar</button>
-                <button class="btn-primary" onclick="saveSlot()">Salvar Aula</button>
+                <button class="btn-outline" style="flex:1;" onclick="closeModal('modal-slot')">Cancelar</button>
+                <button class="btn-primary" style="flex:1;" onclick="saveSlot()">Salvar Aula</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: ALERT -->
     <div class="modal-overlay" id="modal-alert" onclick="handleOverlayClick(event, 'modal-alert')">
-        <div class="modal-content" style="width: 350px; text-align: center; align-items: center; max-height: unset; overflow: hidden; padding: 20px;">
-            <h3 id="alert-title">Aviso</h3>
-            <p id="alert-message" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 10px;"></p>
-            <div style="display: flex; width: 100%; justify-content: center; gap: 10px; margin-top: 16px;">
+        <div class="modal-content" style="width: 320px; text-align: center; align-items: center; max-height: unset; overflow: hidden; padding: 24px;">
+            <h3 id="alert-title" style="margin-bottom: 10px; font-size: 1.2rem;">Aviso</h3>
+            <p id="alert-message" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; line-height: 1.4;"></p>
+            <div style="display: flex; width: 100%; justify-content: center; gap: 12px; margin-top: 16px;">
                 <button class="btn-outline" id="alert-btn-cancel" style="display:none; flex: 1;" onclick="closeModal('modal-alert')">Cancelar</button>
-                <button class="btn-danger" id="alert-btn-confirm" style="flex: 1;" onclick="executeAlertCallback()">Sim</button>
+                <button class="btn-primary" id="alert-btn-confirm" style="flex: 1; background: var(--accent);" onclick="executeAlertCallback()">OK</button>
             </div>
         </div>
     </div>
@@ -450,7 +535,9 @@
             "Tarde": { tempos: ["13:00 - 13:50", "13:50 - 14:40", "14:40 - 15:30", "15:50 - 16:40", "16:40 - 17:30"], intervaloPosicao: 3, intervaloTempo: "15:30 - 15:50" }
         };
 
-        // --- SISTEMA DE MÚLTIPLOS PERFIS BLINDADO ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh6uWJh90-aYZT0O9aseqyVgkBD4E2u4B6A5YveJP3esEn_RmvVMekDEXDfiAnaz4f/exec";
+        window.bnccCache = [];
+
         let dbIndex = { active: 'default', profiles: [{ id: 'default', name: 'Turma Principal' }] };
         let currentProfileId = 'default';
 
@@ -462,6 +549,9 @@
         let alertCallback = null;
         let isFirstRun = false;
         let activeTab = 'tab-rapido';
+        
+        let activeDayIndex = new Date().getDay() - 1; 
+        if(activeDayIndex < 0 || activeDayIndex > 4) activeDayIndex = 0; 
 
         let activeDinamicas = [];
         let activeRecursos = [];
@@ -471,19 +561,17 @@
             let curr = new Date();
             let day = curr.getDay();
             let distanceToMonday = (day === 0) ? 1 : (day === 6 ? 2 : 1 - day);
-            
             let mon = new Date(curr);
             mon.setDate(curr.getDate() + distanceToMonday);
-            
             let fri = new Date(mon);
             fri.setDate(mon.getDate() + 4);
-            
             let pad = n => n.toString().padStart(2, '0');
             return `${pad(mon.getDate())}/${pad(mon.getMonth()+1)} a ${pad(fri.getDate())}/${pad(fri.getMonth()+1)}`;
         }
 
         function getDefaultConfig() {
             return {
+                viewMode: "auto",
                 escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: getAutoWeekPeriod(), turno: "Manhã",
                 tempos: JSON.parse(JSON.stringify(SHIFT_PRESETS["Manhã"].tempos)),
                 intervaloPosicao: SHIFT_PRESETS["Manhã"].intervaloPosicao, 
@@ -496,18 +584,44 @@
             };
         }
 
+        // --- SISTEMA HÍBRIDO (CSS + JS) ---
+        function applyViewMode() {
+            let mode = appConfig.viewMode || 'auto';
+            let isDesktop = false;
+            
+            if (mode === 'desktop') isDesktop = true;
+            else if (mode === 'mobile') isDesktop = false;
+            else isDesktop = (window.innerWidth > 768);
+            
+            if (isDesktop) document.body.classList.add('desktop-mode');
+            else document.body.classList.remove('desktop-mode');
+        }
+
+        function livePreviewMode(value) {
+            let isDesktop = false;
+            if (value === 'desktop') isDesktop = true;
+            else if (value === 'mobile') isDesktop = false;
+            else isDesktop = (window.innerWidth > 768);
+            
+            if (isDesktop) document.body.classList.add('desktop-mode');
+            else document.body.classList.remove('desktop-mode');
+        }
+
+        window.addEventListener('resize', () => {
+            if(!appConfig.viewMode || appConfig.viewMode === 'auto') applyViewMode();
+        });
+        // ------------------------------------
+
         window.onload = () => {
             let savedIndex = localStorage.getItem('planner_index_v2');
-            
             if (savedIndex) {
                 try { 
                     let parsed = JSON.parse(savedIndex); 
                     if(parsed && parsed.active) dbIndex = parsed;
-                } catch(e) { console.error("Erro no index, recuperando...", e); }
+                } catch(e) { console.error("Erro no index", e); }
             } else {
                 let oldConfig = localStorage.getItem('plannerConfigFinal');
                 let oldData = localStorage.getItem('plannerDataFinal');
-                
                 if(oldConfig) {
                     localStorage.setItem('plannerConfig_default', oldConfig);
                     try {
@@ -515,17 +629,13 @@
                         let nome = (cfg.serie && cfg.turmaLetra) ? `${cfg.serie} ${cfg.turmaLetra}` : 'Turma Principal';
                         dbIndex.profiles[0].name = nome;
                     } catch(e) {}
-                } else {
-                    isFirstRun = true;
-                }
+                } else { isFirstRun = true; }
                 if(oldData) localStorage.setItem('plannerData_default', oldData);
-                
                 localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
             }
 
             currentProfileId = dbIndex.active || 'default';
             loadProfile(currentProfileId);
-
             if (isFirstRun) openModal('modal-welcome');
         };
 
@@ -542,19 +652,14 @@
                 try {
                     let parsed = JSON.parse(savedConfig);
                     appConfig = Object.assign({}, defaults, parsed);
-                    
                     if (!Array.isArray(appConfig.dinamicas)) appConfig.dinamicas = [...defaults.dinamicas];
                     if (!Array.isArray(appConfig.recursos)) appConfig.recursos = [...defaults.recursos];
                     if (!Array.isArray(appConfig.ext)) appConfig.ext = [...defaults.ext];
                     if (!Array.isArray(appConfig.tempos) || appConfig.tempos.length < 5) appConfig.tempos = [...defaults.tempos];
                     if (!Array.isArray(appConfig.livros)) appConfig.livros = [];
-                    
                 } catch(e) { appConfig = defaults; }
-            } else {
-                appConfig = defaults;
-            }
+            } else { appConfig = defaults; }
             
-            // Garantia contra matriz vazia ou corrompida (Blindagem do CRASH)
             if (!Array.isArray(appConfig.matriz)) appConfig.matriz = [];
             for (let d = 0; d < 5; d++) {
                 if (!Array.isArray(appConfig.matriz[d])) appConfig.matriz[d] = Array(5).fill("Língua Portuguesa");
@@ -562,16 +667,57 @@
 
             if (savedData) {
                 try { appData = JSON.parse(savedData); } catch(e) { appData = { contents: {} }; }
-            } else {
-                appData = { contents: {} };
-            }
+            } else { appData = { contents: {} }; }
 
             let profInfo = dbIndex.profiles.find(p => p.id === id);
             let badge = document.getElementById('current-profile-badge');
             if(badge) badge.innerText = profInfo ? profInfo.name : 'Turma';
 
+            if(!appConfig.sabAtivo && activeDayIndex === 5) activeDayIndex = 4;
+
+            applyViewMode();
             renderMainGrid();
             buildSettingsMatrix();
+            loadBNCCForCurrentProfile();
+        }
+
+        function loadBNCCForCurrentProfile() {
+            if (!appConfig.serie) return;
+            let anoStr = appConfig.serie.replace(/\D/g, ''); 
+            if (!anoStr) return;
+            
+            let cacheKey = 'bncc_cache_v1_' + anoStr;
+            let cached = localStorage.getItem(cacheKey);
+            
+            if (cached) {
+                try {
+                    window.bnccCache = JSON.parse(cached);
+                    document.getElementById('bncc-status-badge').innerText = "Sincronizado";
+                    document.getElementById('bncc-status-badge').style.background = "#dcfce7";
+                    document.getElementById('bncc-status-badge').style.color = "#166534";
+                    return;
+                } catch(e) {}
+            }
+
+            document.getElementById('bncc-status-badge').innerText = "Atualizando API...";
+            
+            fetch(`${SCRIPT_URL}?ano=${anoStr}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    window.bnccCache = data.data;
+                    localStorage.setItem(cacheKey, JSON.stringify(data.data));
+                    document.getElementById('bncc-status-badge').innerText = "Sincronizado";
+                    document.getElementById('bncc-status-badge').style.background = "#dcfce7";
+                    document.getElementById('bncc-status-badge').style.color = "#166534";
+                }
+            })
+            .catch(err => {
+                console.error("Erro API BNCC:", err);
+                document.getElementById('bncc-status-badge').innerText = "Modo Offline";
+                document.getElementById('bncc-status-badge').style.background = "#fee2e2";
+                document.getElementById('bncc-status-badge').style.color = "#991b1b";
+            });
         }
 
         function saveCurrentProfile() {
@@ -579,44 +725,75 @@
             localStorage.setItem('plannerData_' + currentProfileId, JSON.stringify(appData));
         }
 
+        function exportData() {
+            let backup = { index: dbIndex, profiles: {} };
+            dbIndex.profiles.forEach(p => {
+                backup.profiles[p.id] = {
+                    config: localStorage.getItem('plannerConfig_' + p.id),
+                    data: localStorage.getItem('plannerData_' + p.id)
+                };
+            });
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup));
+            let downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "planner_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function triggerImport() { document.getElementById('import-file').click(); }
+
+        function importData(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let backup = JSON.parse(e.target.result);
+                    if (!backup.index || !backup.profiles) throw new Error("Formato inválido");
+                    
+                    customConfirm("Atenção", "Importar este backup substituirá todos os dados atuais. Deseja continuar?", () => {
+                        localStorage.setItem('planner_index_v2', JSON.stringify(backup.index));
+                        Object.keys(backup.profiles).forEach(id => {
+                            if(backup.profiles[id].config) localStorage.setItem('plannerConfig_' + id, backup.profiles[id].config);
+                            if(backup.profiles[id].data) localStorage.setItem('plannerData_' + id, backup.profiles[id].data);
+                        });
+                        customAlert("Sucesso", "Backup importado com sucesso! O aplicativo será recarregado.");
+                        setTimeout(() => location.reload(), 1500);
+                    });
+                } catch(err) { customAlert("Erro", "Arquivo de backup inválido ou corrompido."); }
+                event.target.value = ''; 
+            };
+            reader.readAsText(file);
+        }
+
         function openProfileSwitch() {
             const list = document.getElementById('profiles-list');
             list.innerHTML = '';
-            
             dbIndex.profiles.forEach(p => {
                 let div = document.createElement('div');
                 div.className = `profile-item ${p.id === currentProfileId ? 'active' : ''}`;
-                
                 let btnDel = p.id !== currentProfileId ? `<button class="list-item-btn" onclick="event.stopPropagation(); deleteProfile('${p.id}', '${p.name}')"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>` : '';
-                
                 div.innerHTML = `<span style="font-weight: 600;">${p.name}</span> ${btnDel}`;
                 div.onclick = () => {
-                    if(isDirty) {
-                        customConfirm("Atenção", "Há edições não salvas nesta turma. Deseja sair sem salvar e trocar?", () => switchProfileExec(p.id));
-                    } else {
-                        switchProfileExec(p.id);
-                    }
+                    if(isDirty) customConfirm("Atenção", "Há edições não salvas nesta turma. Deseja sair sem salvar e trocar?", () => switchProfileExec(p.id));
+                    else switchProfileExec(p.id);
                 };
                 list.appendChild(div);
             });
             openModal('modal-switch');
         }
 
-        function switchProfileExec(id) {
-            closeModal('modal-switch');
-            isDirty = false;
-            loadProfile(id);
-        }
+        function switchProfileExec(id) { closeModal('modal-switch'); isDirty = false; loadProfile(id); }
 
         function createNewProfile() {
             let input = document.getElementById('new-profile-name');
             let name = input.value.trim();
             if(!name) { customAlert("Aviso", "Digite um nome para a nova turma."); return; }
-            
             let newId = 'prof_' + Date.now();
             dbIndex.profiles.push({ id: newId, name: name });
             localStorage.setItem('planner_index_v2', JSON.stringify(dbIndex));
-            
             input.value = '';
             switchProfileExec(newId);
         }
@@ -642,7 +819,10 @@
                 return;
             }
             if(document.getElementById('view-settings').classList.contains('active')) { 
-                if(!isFirstRun) navigateBack(); 
+                if(!isFirstRun) {
+                    applyViewMode(); // restaura se o usuario testou na preview e desistiu
+                    navigateBack(); 
+                }
                 return; 
             }
             if(window.AppInventor) window.AppInventor.setWebViewString('VOLTAR_MENU');
@@ -674,6 +854,33 @@
             activeTab = tabId;
         }
 
+        function stepPage(type, amount) {
+            let input = document.getElementById('slot-book-page-' + type);
+            let val = parseInt(input.value) || 0;
+            let newVal = val + amount;
+            if(newVal < 0) newVal = 0;
+            input.value = newVal;
+            if(type === 'start') syncPages();
+            isDirty = true;
+        }
+
+        function syncPages() {
+            let start = document.getElementById('slot-book-page-start').value;
+            document.getElementById('slot-book-page-end').value = start;
+        }
+
+        function handleBNCCSelection() {
+            isDirty = true;
+            let code = document.getElementById('slot-bncc').value;
+            let assuntoInput = document.getElementById('slot-assunto');
+            if (code && window.bnccCache) {
+                let bnccObj = window.bnccCache.find(b => b.codigo === code);
+                if (bnccObj && assuntoInput.value.trim() === "") {
+                    assuntoInput.value = bnccObj.texto;
+                }
+            }
+        }
+
         function joinOrganic(arr) {
             if (!arr || arr.length === 0) return "";
             if (arr.length === 1) return arr[0];
@@ -681,73 +888,90 @@
         }
 
         function buildOrganicText(data, isPdf = false) {
-            if (!data) return isPdf ? "" : '<span style="color:#cbd5e1;">Tocar para planejar...</span>';
-            
-            if (data.isFreeText && data.freeText.trim() !== "") {
-                return data.freeText.replace(/\n/g, '<br>');
-            }
-            
-            if (data.useExt && data.ext && data.ext.length > 0) { 
-                let extHTML = `<div style="font-weight: 700; color: ${isPdf ? '#b45309' : 'var(--warning)'}; text-transform: uppercase; margin-top: ${isPdf ? '15px' : '4px'}; ${isPdf ? 'text-align: center; font-size: 9pt;' : ''}">${data.ext[0]}</div>`;
-                if (data.extDetails && data.extDetails.trim() !== "") {
-                    extHTML += `<div style="font-size: 0.75rem; color: #b45309; margin-top:2px; ${isPdf ? 'text-align: center;' : ''}">↳ ${data.extDetails}</div>`;
-                }
-                return extHTML;
-            }
-
-            let phrases = [];
+            if (!data) return isPdf ? "" : '<span style="color:#cbd5e1; display:flex; align-items:center; height:100%; justify-content:center; font-style:italic;">Tocar para planejar...</span>';
             
             let header = [];
             if (data.bncc) header.push(`<span style="color:#0369a1; font-weight:700;">[${data.bncc}]</span>`);
             if (data.assunto) header.push(`<b>${data.assunto}</b>`);
-            if (header.length > 0) phrases.push(header.join(" "));
+            let headerHTML = header.length > 0 ? header.join(" ") : "";
+
+            if (data.useExt && data.ext && data.ext.length > 0 && !data.isFreeText) { 
+                let extHTML = `<div style="font-weight: 700; color: ${isPdf ? '#b45309' : 'var(--warning)'}; text-transform: uppercase; margin-top: ${isPdf ? '8px' : '4px'}; ${isPdf ? 'text-align: center; font-size: 9pt;' : ''}">${data.ext[0]}</div>`;
+                if (data.extDetails && data.extDetails.trim() !== "") {
+                    extHTML += `<div style="font-size: 0.8rem; color: #b45309; margin-top:2px; ${isPdf ? 'text-align: center;' : ''}">↳ ${data.extDetails}</div>`;
+                }
+                return headerHTML ? `${headerHTML}<br>${extHTML}` : extHTML;
+            }
+
+            if (data.isFreeText && data.freeText.trim() !== "") {
+                let freeHTML = data.freeText.replace(/\n/g, '<br>');
+                return headerHTML ? `${headerHTML}<br><div style="margin-top:4px;">${freeHTML}</div>` : freeHTML;
+            }
 
             let din = data.dinamicas && data.dinamicas.length > 0 ? joinOrganic(data.dinamicas) : "";
-            
+            if (din && data.dinamicaDesc) din += `: ${data.dinamicaDesc}`;
+
             let recArr = [];
             if (data.useBook && data.bookName) {
                 let bk = `Livro ${data.bookName}`;
-                if (data.bookPages) bk += ` (Págs ${data.bookPages})`;
+                if (data.bookPageStart || data.bookPageEnd) {
+                    let pS = data.bookPageStart || "";
+                    let pE = data.bookPageEnd || "";
+                    let pagesStr = (pS && pE && pS !== pE) ? `${pS} a ${pE}` : (pS || pE);
+                    if (pagesStr) bk += ` (Págs ${pagesStr})`;
+                }
                 recArr.push(`<span style="color:${isPdf ? '#3b82f6' : 'var(--accent)'}; font-weight:600;">${bk}</span>`);
             }
             if (data.recursos && data.recursos.length > 0) recArr = recArr.concat(data.recursos);
             
             let rec = recArr.length > 0 ? joinOrganic(recArr) : "";
+            if (rec && data.recursoDesc) rec += `: ${data.recursoDesc}`;
 
-            if (din && rec) {
-                phrases.push(`${din} com uso de ${rec}`);
-            } else if (din) {
-                phrases.push(din);
-            } else if (rec) {
-                phrases.push(`Uso de ${rec}`);
-            }
+            let bodyText = "";
+            if (din && rec) bodyText = `${din} com uso de ${rec}`;
+            else if (din) bodyText = din;
+            else if (rec) bodyText = `Uso de ${rec}`;
 
-            if (phrases.length === 0) return isPdf ? "" : '<span style="color:#cbd5e1;">Aula em branco...</span>';
+            if (bodyText) bodyText = bodyText + (bodyText.endsWith('.') ? "" : ".");
+
+            if (!headerHTML && !bodyText) return isPdf ? "" : '<span style="color:#cbd5e1; display:flex; align-items:center; height:100%; justify-content:center; font-style:italic;">Aula em branco...</span>';
             
-            return phrases.join(". ") + (phrases.length > 0 && !phrases[phrases.length-1].endsWith('.') ? "." : "");
+            if(headerHTML && bodyText) return `<div style="margin-bottom:4px;">${headerHTML}</div><div>${bodyText}</div>`;
+            else if (headerHTML) return headerHTML;
+            else return bodyText;
+        }
+
+        // --- RENDERIZAÇÃO HÍBRIDA DA GRADE ---
+        function switchDay(index) {
+            activeDayIndex = index;
+            renderMainGrid();
         }
 
         function renderMainGrid() {
-            const container = document.getElementById('week-grid');
+            const container = document.getElementById('view-main');
             container.innerHTML = '';
             const totalDays = appConfig.sabAtivo ? 6 : 5;
 
+            // Abas de Dias (Ficam ocultas via CSS quando em modo desktop)
+            let tabsHTML = `<div class="day-tabs" id="day-tabs-container">`;
             for (let d = 0; d < totalDays; d++) {
-                let col = document.createElement('div');
-                col.className = 'day-col';
-                col.innerHTML = `<div class="day-header">${DAYS_NAMES[d]}</div>`;
-                let body = document.createElement('div');
-                body.className = 'day-body';
-                
+                tabsHTML += `<div class="day-tab ${d === activeDayIndex ? 'active' : ''}" onclick="switchDay(${d})">${DAYS_NAMES[d]}</div>`;
+            }
+            tabsHTML += `</div>`;
+            
+            // Container unificado
+            let gridHTML = `<div class="week-container">`;
+            for (let d = 0; d < totalDays; d++) {
                 let sourceDayIndex = (d === 5) ? (parseInt(appConfig.sabEspelha) || 0) : d;
                 let daySubjects = appConfig.matriz[sourceDayIndex] || Array(5).fill("Língua Portuguesa");
 
+                gridHTML += `<div class="day-col ${d === activeDayIndex ? 'active' : ''}">`;
+                gridHTML += `<div class="day-header">${DAYS_NAMES[d]}</div>`;
+                gridHTML += `<div class="day-body">`;
+
                 for (let aula = 0; aula < 5; aula++) {
                     if (aula === parseInt(appConfig.intervaloPosicao)) {
-                        let intDiv = document.createElement('div');
-                        intDiv.className = 'interval';
-                        intDiv.innerText = `${appConfig.intervaloTempo} • INTERVALO`;
-                        body.appendChild(intDiv);
+                        gridHTML += `<div class="interval">${appConfig.intervaloTempo} • INTERVALO</div>`;
                     }
 
                     let slotId = `d${d}-a${aula}`;
@@ -755,25 +979,31 @@
                     let time = (appConfig.tempos && appConfig.tempos[aula]) ? appConfig.tempos[aula] : "00:00";
                     let slotData = appData.contents[slotId];
 
-                    let card = document.createElement('div');
-                    card.className = 'slot-card';
-                    card.onclick = () => openSlotModal(slotId, subject, time);
-                    card.innerHTML = `
-                        <div class="slot-header"><span>${time}</span><span class="slot-subject">${subject}</span></div>
-                        <div class="slot-content">${buildOrganicText(slotData, false)}</div>
+                    gridHTML += `
+                        <div class="slot-card" onclick="openSlotModal('${slotId}', '${subject}', '${time}')">
+                            <div class="slot-header"><span>${time}</span><span class="slot-subject">${subject}</span></div>
+                            <div class="slot-content">${buildOrganicText(slotData, false)}</div>
+                        </div>
                     `;
-                    body.appendChild(card);
                 }
-                
                 if (5 === parseInt(appConfig.intervaloPosicao)) {
-                    let intDiv = document.createElement('div');
-                    intDiv.className = 'interval';
-                    intDiv.innerText = `${appConfig.intervaloTempo} • INTERVALO`;
-                    body.appendChild(intDiv);
+                    gridHTML += `<div class="interval">${appConfig.intervaloTempo} • INTERVALO</div>`;
                 }
+                gridHTML += `</div></div>`;
+            }
+            gridHTML += `</div>`;
 
-                col.appendChild(body);
-                container.appendChild(col);
+            container.innerHTML = tabsHTML + gridHTML;
+
+            // Scroll suave da aba só aplica se não estiver no desktop mode
+            if (!document.body.classList.contains('desktop-mode')) {
+                setTimeout(() => {
+                    let tabsContainer = document.getElementById('day-tabs-container');
+                    if (tabsContainer) {
+                        let activeTabEl = tabsContainer.querySelector('.active');
+                        if(activeTabEl) activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }, 50);
             }
         }
 
@@ -788,7 +1018,6 @@
             appConfig[cat].forEach((item, index) => {
                 let div = document.createElement('div');
                 div.className = 'list-item';
-                div.style.padding = '6px 12px';
                 div.innerHTML = `<span>${item}</span><button class="list-item-btn" onclick="removeCustomItem('${cat}', ${index})"><svg viewBox="0 0 24 24" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
                 container.appendChild(div);
             });
@@ -885,14 +1114,30 @@
             const selectBook = document.getElementById('slot-book-select');
             selectBook.innerHTML = (appConfig.livros || []).map(l => `<option value="${l}">${l}</option>`).join('');
 
+            const selectBncc = document.getElementById('slot-bncc');
+            selectBncc.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
+
+            if (window.bnccCache && window.bnccCache.length > 0) {
+                let filtered = window.bnccCache.filter(b => b.componente === subject);
+                if(filtered.length === 0) {
+                    selectBncc.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
+                } else {
+                    filtered.forEach(b => {
+                        selectBncc.innerHTML += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`;
+                    });
+                }
+            } else {
+                selectBncc.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
+            }
+
             let slotData = appData.contents[id] || { 
-                assunto: "", bncc: "", dinamicas: [], recursos: [], 
-                useBook: false, bookName: "", bookPages: "", 
+                assunto: "", bncc: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
+                useBook: false, bookName: "", bookPageStart: "", bookPageEnd: "", 
                 useExt: false, ext: [], extDetails: "", isFreeText: false, freeText: "" 
             };
             
             document.getElementById('slot-assunto').value = slotData.assunto || "";
-            document.getElementById('slot-bncc').value = slotData.bncc || "";
+            selectBncc.value = slotData.bncc || "";
             
             const toggleExt = document.getElementById('slot-ext-toggle');
             toggleExt.checked = slotData.useExt || false;
@@ -904,7 +1149,11 @@
             toggleBook.checked = slotData.useBook;
             document.getElementById('slot-book-area').style.display = slotData.useBook ? 'flex' : 'none';
             if(slotData.bookName && (appConfig.livros||[]).includes(slotData.bookName)) selectBook.value = slotData.bookName;
-            document.getElementById('slot-book-pages').value = slotData.bookPages || "";
+            
+            document.getElementById('slot-book-page-start').value = slotData.bookPageStart || "";
+            document.getElementById('slot-book-page-end').value = slotData.bookPageEnd || "";
+            document.getElementById('slot-dinamica-desc').value = slotData.dinamicaDesc || "";
+            document.getElementById('slot-recurso-desc').value = slotData.recursoDesc || "";
             
             activeDinamicas = slotData.dinamicas ? [...slotData.dinamicas] : [];
             activeRecursos = slotData.recursos ? [...slotData.recursos] : [];
@@ -925,10 +1174,13 @@
                 assunto: document.getElementById('slot-assunto').value.trim(),
                 bncc: document.getElementById('slot-bncc').value.trim(),
                 dinamicas: [...activeDinamicas],
+                dinamicaDesc: document.getElementById('slot-dinamica-desc').value.trim(),
                 recursos: [...activeRecursos],
+                recursoDesc: document.getElementById('slot-recurso-desc').value.trim(),
                 useBook: document.getElementById('slot-book-toggle').checked,
                 bookName: document.getElementById('slot-book-select').value,
-                bookPages: document.getElementById('slot-book-pages').value.trim(),
+                bookPageStart: document.getElementById('slot-book-page-start').value,
+                bookPageEnd: document.getElementById('slot-book-page-end').value,
                 useExt: document.getElementById('slot-ext-toggle').checked,
                 ext: [...activeExt],
                 extDetails: document.getElementById('slot-ext-details').value.trim(),
@@ -949,6 +1201,7 @@
             document.getElementById('cfg-periodo').value = appConfig.periodo || "";
             document.getElementById('cfg-prof').value = appConfig.prof || "";
             document.getElementById('cfg-prof-ed').value = appConfig.profEd || "";
+            document.getElementById('cfg-view-mode').value = appConfig.viewMode || "auto";
             
             renderBooksList();
             renderCustomList();
@@ -1009,16 +1262,27 @@
             }
         }
 
+        // --- MATRIZ CURRICULAR (HÍBRIDA) ---
         function buildSettingsMatrix() {
-            let tbody = document.getElementById('matrix-body');
-            tbody.innerHTML = '';
+            let container = document.getElementById('matrix-container');
+            container.innerHTML = '';
             let optionsHTML = SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('');
 
-            for(let a=0; a<5; a++) {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `<td><b>${a+1}ª</b></td>`;
-                for(let d=0; d<5; d++) { tr.innerHTML += `<td><select id="sel-d${d}-a${a}">${optionsHTML}</select></td>`; }
-                tbody.appendChild(tr);
+            for(let d=0; d<5; d++) {
+                let dayCard = document.createElement('div');
+                dayCard.className = 'day-matrix-card';
+                dayCard.innerHTML = `<div class="day-matrix-title">${DAYS_NAMES[d]}</div>`;
+                
+                let slotsGrid = document.createElement('div');
+                for(let a=0; a<5; a++) {
+                    slotsGrid.innerHTML += `
+                    <div class="matrix-slot-row">
+                        <span class="matrix-slot-label">${a+1}ª</span>
+                        <select id="sel-d${d}-a${a}" class="input-flat">${optionsHTML}</select>
+                    </div>`;
+                }
+                dayCard.appendChild(slotsGrid);
+                container.appendChild(dayCard);
             }
         }
 
@@ -1030,11 +1294,14 @@
 
         function saveSettings() {
             try {
+                let oldSerie = appConfig.serie;
+                
                 appConfig.escola = document.getElementById('cfg-escola').value;
                 appConfig.serie = document.getElementById('cfg-serie').value;
                 appConfig.turmaLetra = document.getElementById('cfg-turma-letra').value;
                 appConfig.turno = document.getElementById('cfg-turno').value;
                 appConfig.periodo = document.getElementById('cfg-periodo').value;
+                appConfig.viewMode = document.getElementById('cfg-view-mode').value;
                 appConfig.prof = document.getElementById('cfg-prof').value;
                 appConfig.profEd = document.getElementById('cfg-prof-ed').value;
 
@@ -1050,7 +1317,6 @@
                 appConfig.sabEspelha = document.getElementById('cfg-sab-mirror').value;
 
                 if (!Array.isArray(appConfig.matriz)) appConfig.matriz = [];
-                
                 for(let d=0; d<5; d++) {
                     if(!Array.isArray(appConfig.matriz[d])) appConfig.matriz[d] = [];
                     for(let a=0; a<5; a++) { 
@@ -1067,12 +1333,16 @@
 
                 saveCurrentProfile();
                 isFirstRun = false;
+                
+                if (oldSerie !== appConfig.serie) loadBNCCForCurrentProfile();
+                if(!appConfig.sabAtivo && activeDayIndex === 5) activeDayIndex = 4;
+
+                applyViewMode(); // Garante o CSS correto com o novo salvamento
                 renderMainGrid();
                 navigateBack();
                 
             } catch (e) {
-                console.error("Erro ao salvar configurações: ", e);
-                customAlert("Erro Crítico", "Falha de gravação! A memória da página foi restaurada para evitar perda de dados. Limpe o cache do navegador se o erro persistir.");
+                customAlert("Erro Crítico", "Falha de gravação! A memória da página foi restaurada para evitar perda de dados.");
             }
         }
 
@@ -1103,6 +1373,7 @@
         }
         function executeAlertCallback() { if(alertCallback) alertCallback(); }
 
+        // --- GERAÇÃO DE PDF (MANTÉM O LAYOUT HORIZONTAL E A4) ---
         function getExportHTML() {
             const cols = appConfig.sabAtivo ? 6 : 5;
             const turmaCompleta = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
