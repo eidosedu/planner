@@ -66,7 +66,7 @@
         #matrix-container { display: flex; flex-direction: column; gap: 12px; }
         .form-grid { display: flex; flex-direction: column; gap: 12px; }
 
-        /* 2. Modificadores Desktop (Aplicado via JS com a classe .desktop-mode no body) */
+        /* 2. Modificadores Desktop */
         .desktop-mode .day-tabs { display: none; }
         .desktop-mode .week-container { flex-direction: row; gap: 12px; overflow-x: auto; overflow-y: hidden; padding: 16px; align-items: flex-start; }
         
@@ -323,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- MATRIZ UNIFICADA -->
             <div class="settings-section">
                 <h3>
                     <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -406,12 +405,19 @@
             
             <div class="modal-body" style="padding-bottom: 16px;">
                 
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group" style="margin-bottom: 4px;">
                     <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Competência / Cód. BNCC</span>
+                        <span>Competência / Cód. BNCC 1</span>
                         <span id="bncc-status-badge" style="font-size: 0.7rem; background:#e0f2fe; padding:2px 6px; border-radius:4px;">Carregando...</span>
                     </label>
-                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection()" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
+                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection(1)" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
+                        <span>Competência / Cód. BNCC 2 (Opcional)</span>
+                    </label>
+                    <select id="slot-bncc-2" class="input-flat" onchange="handleBNCCSelection(2)" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
@@ -584,11 +590,9 @@
             };
         }
 
-        // --- SISTEMA HÍBRIDO (CSS + JS) ---
         function applyViewMode() {
             let mode = appConfig.viewMode || 'auto';
             let isDesktop = false;
-            
             if (mode === 'desktop') isDesktop = true;
             else if (mode === 'mobile') isDesktop = false;
             else isDesktop = (window.innerWidth > 768);
@@ -610,7 +614,45 @@
         window.addEventListener('resize', () => {
             if(!appConfig.viewMode || appConfig.viewMode === 'auto') applyViewMode();
         });
-        // ------------------------------------
+
+        // --- SISTEMA GLOBAL: ESCUTAR ENTER ---
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                // Se o foco estiver no textarea (Texto Livre), permite a quebra de linha normal.
+                if (e.target.tagName.toLowerCase() === 'textarea') return;
+
+                // 1. Alerta
+                if (document.getElementById('modal-alert').classList.contains('active')) {
+                    e.preventDefault();
+                    executeAlertCallback();
+                    return;
+                }
+                
+                // 2. Modal de Aula
+                if (document.getElementById('modal-slot').classList.contains('active')) {
+                    e.preventDefault();
+                    saveSlot();
+                    return;
+                }
+
+                // 3. Switch de Turmas
+                if (document.getElementById('modal-switch').classList.contains('active')) {
+                    e.preventDefault();
+                    let inputName = document.getElementById('new-profile-name').value.trim();
+                    if(inputName) createNewProfile();
+                    else closeModal('modal-switch');
+                    return;
+                }
+
+                // 4. Welcome
+                if (document.getElementById('modal-welcome').classList.contains('active')) {
+                    e.preventDefault();
+                    closeModal('modal-welcome');
+                    openSettings(true);
+                    return;
+                }
+            }
+        });
 
         window.onload = () => {
             let savedIndex = localStorage.getItem('planner_index_v2');
@@ -820,7 +862,7 @@
             }
             if(document.getElementById('view-settings').classList.contains('active')) { 
                 if(!isFirstRun) {
-                    applyViewMode(); // restaura se o usuario testou na preview e desistiu
+                    applyViewMode(); 
                     navigateBack(); 
                 }
                 return; 
@@ -869,9 +911,10 @@
             document.getElementById('slot-book-page-end').value = start;
         }
 
-        function handleBNCCSelection() {
+        function handleBNCCSelection(typeId) {
             isDirty = true;
-            let code = document.getElementById('slot-bncc').value;
+            let elemId = typeId === 2 ? 'slot-bncc-2' : 'slot-bncc';
+            let code = document.getElementById(elemId).value;
             let assuntoInput = document.getElementById('slot-assunto');
             if (code && window.bnccCache) {
                 let bnccObj = window.bnccCache.find(b => b.codigo === code);
@@ -891,7 +934,12 @@
             if (!data) return isPdf ? "" : '<span style="color:#cbd5e1; display:flex; align-items:center; height:100%; justify-content:center; font-style:italic;">Tocar para planejar...</span>';
             
             let header = [];
-            if (data.bncc) header.push(`<span style="color:#0369a1; font-weight:700;">[${data.bncc}]</span>`);
+            let bnccHTML = [];
+            
+            if (data.bncc) bnccHTML.push(`[${data.bncc}]`);
+            if (data.bncc2) bnccHTML.push(`[${data.bncc2}]`);
+            
+            if (bnccHTML.length > 0) header.push(`<span style="color:#0369a1; font-weight:700;">${bnccHTML.join(" ")}</span>`);
             if (data.assunto) header.push(`<b>${data.assunto}</b>`);
             let headerHTML = header.length > 0 ? header.join(" ") : "";
 
@@ -941,7 +989,6 @@
             else return bodyText;
         }
 
-        // --- RENDERIZAÇÃO HÍBRIDA DA GRADE ---
         function switchDay(index) {
             activeDayIndex = index;
             renderMainGrid();
@@ -952,14 +999,12 @@
             container.innerHTML = '';
             const totalDays = appConfig.sabAtivo ? 6 : 5;
 
-            // Abas de Dias (Ficam ocultas via CSS quando em modo desktop)
             let tabsHTML = `<div class="day-tabs" id="day-tabs-container">`;
             for (let d = 0; d < totalDays; d++) {
                 tabsHTML += `<div class="day-tab ${d === activeDayIndex ? 'active' : ''}" onclick="switchDay(${d})">${DAYS_NAMES[d]}</div>`;
             }
             tabsHTML += `</div>`;
             
-            // Container unificado
             let gridHTML = `<div class="week-container">`;
             for (let d = 0; d < totalDays; d++) {
                 let sourceDayIndex = (d === 5) ? (parseInt(appConfig.sabEspelha) || 0) : d;
@@ -995,7 +1040,6 @@
 
             container.innerHTML = tabsHTML + gridHTML;
 
-            // Scroll suave da aba só aplica se não estiver no desktop mode
             if (!document.body.classList.contains('desktop-mode')) {
                 setTimeout(() => {
                     let tabsContainer = document.getElementById('day-tabs-container');
@@ -1115,29 +1159,36 @@
             selectBook.innerHTML = (appConfig.livros || []).map(l => `<option value="${l}">${l}</option>`).join('');
 
             const selectBncc = document.getElementById('slot-bncc');
+            const selectBncc2 = document.getElementById('slot-bncc-2');
+            
             selectBncc.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
+            selectBncc2.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
 
             if (window.bnccCache && window.bnccCache.length > 0) {
                 let filtered = window.bnccCache.filter(b => b.componente === subject);
                 if(filtered.length === 0) {
                     selectBncc.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
+                    selectBncc2.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
                 } else {
-                    filtered.forEach(b => {
-                        selectBncc.innerHTML += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`;
-                    });
+                    let opts = '';
+                    filtered.forEach(b => { opts += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`; });
+                    selectBncc.innerHTML += opts;
+                    selectBncc2.innerHTML += opts;
                 }
             } else {
                 selectBncc.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
+                selectBncc2.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
             }
 
             let slotData = appData.contents[id] || { 
-                assunto: "", bncc: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
+                assunto: "", bncc: "", bncc2: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
                 useBook: false, bookName: "", bookPageStart: "", bookPageEnd: "", 
                 useExt: false, ext: [], extDetails: "", isFreeText: false, freeText: "" 
             };
             
             document.getElementById('slot-assunto').value = slotData.assunto || "";
             selectBncc.value = slotData.bncc || "";
+            selectBncc2.value = slotData.bncc2 || "";
             
             const toggleExt = document.getElementById('slot-ext-toggle');
             toggleExt.checked = slotData.useExt || false;
@@ -1173,6 +1224,7 @@
             appData.contents[currentSlotId] = {
                 assunto: document.getElementById('slot-assunto').value.trim(),
                 bncc: document.getElementById('slot-bncc').value.trim(),
+                bncc2: document.getElementById('slot-bncc-2').value.trim(),
                 dinamicas: [...activeDinamicas],
                 dinamicaDesc: document.getElementById('slot-dinamica-desc').value.trim(),
                 recursos: [...activeRecursos],
@@ -1199,9 +1251,9 @@
             document.getElementById('cfg-turma-letra').value = appConfig.turmaLetra || "";
             document.getElementById('cfg-turno').value = appConfig.turno || "Manhã";
             document.getElementById('cfg-periodo').value = appConfig.periodo || "";
+            document.getElementById('cfg-view-mode').value = appConfig.viewMode || "auto";
             document.getElementById('cfg-prof').value = appConfig.prof || "";
             document.getElementById('cfg-prof-ed').value = appConfig.profEd || "";
-            document.getElementById('cfg-view-mode').value = appConfig.viewMode || "auto";
             
             renderBooksList();
             renderCustomList();
@@ -1262,7 +1314,6 @@
             }
         }
 
-        // --- MATRIZ CURRICULAR (HÍBRIDA) ---
         function buildSettingsMatrix() {
             let container = document.getElementById('matrix-container');
             container.innerHTML = '';
@@ -1337,7 +1388,7 @@
                 if (oldSerie !== appConfig.serie) loadBNCCForCurrentProfile();
                 if(!appConfig.sabAtivo && activeDayIndex === 5) activeDayIndex = 4;
 
-                applyViewMode(); // Garante o CSS correto com o novo salvamento
+                applyViewMode(); 
                 renderMainGrid();
                 navigateBack();
                 
@@ -1373,7 +1424,6 @@
         }
         function executeAlertCallback() { if(alertCallback) alertCallback(); }
 
-        // --- GERAÇÃO DE PDF (MANTÉM O LAYOUT HORIZONTAL E A4) ---
         function getExportHTML() {
             const cols = appConfig.sabAtivo ? 6 : 5;
             const turmaCompleta = `${appConfig.serie} ${appConfig.turmaLetra}`.trim();
