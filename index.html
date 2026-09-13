@@ -15,101 +15,86 @@
             --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05); --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
         
         html, body { width: 100%; height: 100%; overflow: hidden; background-color: var(--bg); }
         body { color: var(--text); height: 100dvh; display: flex; flex-direction: column; }
         @supports (-webkit-touch-callout: none) { body { height: -webkit-fill-available; } }
 
         header { background-color: var(--surface); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 50; min-height: 60px; flex-shrink: 0;}
-        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;}
-        .header-title { font-size: 1.1rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .header-subtitle { font-size: 0.7rem; color: var(--accent); background: var(--surface-hover); padding: 2px 6px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;}
-        .header-actions { display: flex; gap: 6px; flex-shrink: 0;}
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-title { font-size: 1.15rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;}
+        .header-subtitle { font-size: 0.75rem; color: var(--accent); background: var(--surface-hover); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600;}
+        .header-actions { display: flex; gap: 8px; }
 
         button { border: none; outline: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; background: transparent; gap: 6px; font-size: 0.9rem;}
-        .btn-icon { width: 40px; height: 40px; border-radius: 8px; color: var(--text-muted); background-color: var(--surface-hover); padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+        .btn-icon { width: 40px; height: 40px; border-radius: 8px; color: var(--text-muted); background-color: var(--surface-hover); padding: 0; display: flex; align-items: center; justify-content: center;}
         .btn-icon svg { width: 20px; height: 20px; display: block; }
         .btn-icon:hover { background-color: var(--surface-active); color: var(--text); }
         
         .btn-primary { padding: 0 16px; height: 40px; border-radius: 8px; background-color: var(--accent); color: white; font-weight: 600; display: flex; align-items: center; gap: 8px;}
-        .btn-primary svg { width: 18px; height: 18px; margin: 0; }
+        .btn-primary svg { width: 18px; height: 18px; }
         .btn-primary:hover { background-color: var(--accent-hover); }
         .btn-outline { padding: 0 16px; height: 40px; border-radius: 8px; border: 1px solid var(--border); color: var(--text); font-weight: 600; background: var(--surface); }
         .btn-outline:hover { background-color: var(--surface-hover); }
 
-        .hide-text-mobile { display: none; }
-        .desktop-mode .hide-text-mobile { display: inline; }
-
-        .view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; position: relative; }
+        .view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; flex-direction: column; position: relative; }
         .view.active { display: flex; }
 
-        /* --- ARQUITETURA RESPONSIVA UNIFICADA --- */
-        /* 1. Base (Mobile / Vertical) */
-        .day-tabs { display: flex; overflow-x: auto; gap: 8px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; scroll-behavior: smooth; }
-        .day-tabs::-webkit-scrollbar { display: none; }
-        .day-tab { padding: 8px 18px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-        .day-tab.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: var(--shadow-sm); }
-        
-        .week-container { display: flex; flex-direction: column; flex: 1; overflow-y: auto; padding: 0;}
-        
-        .day-col { display: none; flex-direction: column; flex: 1; overflow-y: auto; background: transparent; border: none; padding: 0;}
-        .day-col.active { display: flex; }
-        .day-header { display: none; }
-        .day-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .week-container { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding-bottom: 20px; align-items: flex-start; }
+        .day-col { flex: 1; min-width: 250px; background-color: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-sm); }
+        .day-header { background-color: var(--surface-active); padding: 10px; text-align: center; font-weight: 700; font-size: 1rem; border-bottom: 1px solid var(--border); }
+        .day-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 
-        .slot-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; background-color: var(--surface); min-height: 90px; display: flex; flex-direction: column; position: relative; z-index: 1; box-shadow: var(--shadow-sm);}
-        .slot-card:active, .slot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); z-index: 2;}
-        
-        .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 8px; border: 1px dashed var(--border); border-radius: 8px; margin: 4px 0; background-color: var(--surface-hover); pointer-events: none;}
-        
-        #matrix-container { display: flex; flex-direction: column; gap: 12px; }
-        .form-grid { display: flex; flex-direction: column; gap: 12px; }
-
-        /* 2. Modificadores Desktop */
-        .desktop-mode .day-tabs { display: none; }
-        .desktop-mode .week-container { flex-direction: row; gap: 12px; overflow-x: auto; overflow-y: hidden; padding: 16px; align-items: flex-start; }
-        
-        .desktop-mode .day-col { display: flex; flex: 1; min-width: 250px; background-color: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); padding: 0;}
-        .desktop-mode .day-header { display: block; background-color: var(--surface-active); padding: 10px; text-align: center; font-weight: 700; font-size: 1rem; border-bottom: 1px solid var(--border); }
-        .desktop-mode .day-body { padding: 10px; gap: 8px; }
-        
-        .desktop-mode .slot-card { background-color: var(--surface-hover); padding: 10px; border-radius: 6px; box-shadow: none; }
-        .desktop-mode .interval { padding: 6px; border-radius: 6px; background-color: var(--bg); margin: 4px 0;}
-        
-        .desktop-mode #matrix-container { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; }
-        .desktop-mode .day-matrix-card { flex: 1; min-width: 180px; }
-        .desktop-mode .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-        /* -------------------------------------- */
-
-        .slot-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;}
+        .slot-card { border: 1px solid var(--border); border-radius: 6px; padding: 10px; cursor: pointer; background-color: var(--surface-hover); min-height: 90px; display: flex; flex-direction: column; position: relative; z-index: 1;}
+        .slot-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); z-index: 2;}
+        .slot-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px;}
         .slot-subject { color: var(--accent); }
-        .slot-content { font-size: 0.85rem; color: var(--text); flex: 1; line-height: 1.4; display: flex; flex-direction: column; gap: 4px;}
-
-        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; padding: 16px; padding-bottom: 100px; } 
-        .settings-section { background-color: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-        .settings-section h3 { font-size: 1.05rem; border-bottom: 2px solid var(--surface-active); padding-bottom: 8px; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 6px;}
+        .slot-content { font-size: 0.8rem; color: var(--text); flex: 1; line-height: 1.4; display: flex; flex-direction: column; gap: 4px;}
         
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 6px; border: 1px dashed var(--border); border-radius: 6px; margin: 4px 0; background-color: var(--bg); pointer-events: none;}
+
+        /* RESPONSIVIDADE EM CELULARES (TABS DIÁRIAS) */
+        .mobile-day-tabs { display: none; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; flex-shrink: 0; margin: -16px -16px 12px -16px; padding: 0 8px;}
+        .mobile-day-tabs::-webkit-scrollbar { display: none; }
+        .mobile-day-tab { padding: 14px 16px; display: inline-block; font-weight: 700; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;}
+        .mobile-day-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .mobile-day-tabs { display: block; }
+            .week-container { display: block; overflow-x: hidden; padding-bottom: 80px; gap: 0;}
+            .day-col { display: none; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+            .day-col.active { display: flex; }
+            .day-header { display: none; } 
+        }
+
+        .settings-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px; padding-bottom: 100px; } 
+        .settings-section { background-color: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .settings-section h3 { font-size: 1.1rem; border-bottom: 2px solid var(--surface-active); padding-bottom: 8px; margin-bottom: 16px; color: var(--text); }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
         .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
         
-        .input-flat { padding: 12px 10px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s; width: 100%; max-width: 100%;}
+        .input-flat { padding: 10px; border: 1px solid var(--border); border-radius: 6px; background-color: var(--bg); color: var(--text); font-size: 0.9rem; outline: none; transition: border 0.2s; width: 100%; max-width: 100%;}
         .input-flat:focus { border-color: var(--accent); }
         select.input-flat { cursor: pointer; appearance: auto; text-overflow: ellipsis; }
 
+        .form-row-compact { display: flex; gap: 10px; }
+        .form-row-compact > div { flex: 1; }
+
         .list-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-hover); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem;}
+        .list-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-hover); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.9rem;}
         .list-item-btn { color: var(--danger); background: transparent; padding: 4px; border-radius: 4px; }
         .list-item-btn:hover { background: var(--surface-active); }
 
-        .day-matrix-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--bg); }
-        .day-matrix-title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 10px; text-transform: uppercase;}
-        .matrix-slot-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .matrix-slot-row:last-child { margin-bottom: 0; }
-        .matrix-slot-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); width: 35px; flex-shrink: 0;}
+        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .matrix-table th, .matrix-table td { border: 1px solid var(--border); padding: 6px; text-align: center; }
+        .matrix-table th { background-color: var(--surface-hover); font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+        .matrix-table select { width: 100%; padding: 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); cursor: pointer;}
 
-        .check-group { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;}
-        .check-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+        .check-group { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;}
+        .check-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
         
         .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: var(--surface-hover); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;}
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;}
@@ -119,10 +104,10 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .stepper-group { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); height: 42px;}
-        .stepper-btn { background: var(--surface-hover); border: none; width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: var(--text); }
-        .stepper-btn:active { background: var(--surface-active); }
-        .stepper-input { border: none; width: 50px; text-align: center; font-size: 1rem; outline: none; background: transparent; -moz-appearance: textfield;}
+        .stepper-group { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); height: 38px;}
+        .stepper-btn { background: var(--surface-hover); border: none; width: 34px; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; color: var(--text); }
+        .stepper-btn:hover { background: var(--surface-active); }
+        .stepper-input { border: none; width: 45px; text-align: center; font-size: 0.95rem; outline: none; background: transparent; -moz-appearance: textfield;}
         .stepper-input::-webkit-outer-spin-button, .stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         .settings-bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; z-index: 999; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
@@ -130,7 +115,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background-color: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
-        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 550px; max-width: 92%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90dvh; overflow: hidden; position: relative;}
+        .modal-content { background-color: var(--surface); border-radius: 12px; padding: 0; width: 500px; max-width: 95%; transform: scale(0.95); transition: transform 0.2s; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 90dvh; overflow: hidden; position: relative;}
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 16px; flex-shrink: 0;}
@@ -141,8 +126,9 @@
         .welcome-icon { width: 64px; height: 64px; color: var(--accent); margin: 0 auto 16px auto; }
         .welcome-icon svg { width: 100%; height: 100%; display: block; }
 
-        .tabs-header { display: flex; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); flex-shrink: 0; background-color: var(--surface); margin: 0 -16px 4px -16px;}
-        .tab-btn { flex: 1; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tabs-header { display: flex; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); flex-shrink: 0; background-color: var(--surface); margin: 0 -16px 4px -16px; overflow-x: auto; white-space: nowrap;}
+        .tabs-header::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 1 0 auto; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background-color: var(--surface-hover); }
         
         .tab-content { display: none; flex-direction: column; gap: 12px; }
@@ -150,20 +136,20 @@
 
         .section-label { font-size: 0.85rem; font-weight: 700; color: var(--text); border-bottom: 2px solid var(--surface-active); padding-bottom: 4px; margin-bottom: 8px;}
         .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .chip { padding: 8px 14px; border-radius: 20px; background-color: var(--surface-hover); border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s;}
+        .chip { padding: 6px 14px; border-radius: 16px; background-color: var(--surface-hover); border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s;}
         .chip.active { background-color: var(--accent); color: white; border-color: var(--accent); }
         
         .chip.external { border-color: var(--warning); color: var(--warning); background: transparent; }
         .chip.external.active { background-color: var(--warning); color: white; border-color: var(--warning); }
 
-        #slot-book-area { display: none; flex-direction: column; gap: 12px; background-color: var(--bg); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 16px;}
+        #slot-book-area { display: none; flex-direction: column; gap: 10px; background-color: var(--bg); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 16px;}
 
         textarea { width: 100%; height: 200px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
         textarea:focus { border-color: var(--accent); }
 
         .profile-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--surface-hover); cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
         .profile-item.active { background-color: #eff6ff; border-color: var(--accent); }
-        .profile-item:active { border-color: var(--accent); }
+        .profile-item:hover { border-color: var(--accent); }
 
         #pdf-export-container { display: none; }
         svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -177,52 +163,52 @@
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <div class="header-title" id="main-title">
-                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; flex-shrink: 0;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Planner</span> 
-                <span class="header-subtitle" id="current-profile-badge">Turma</span>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>Planner</span> <span class="header-subtitle" id="current-profile-badge">Turma</span>
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn-icon" id="btn-bncc-consult" onclick="openBnccModal()" title="Consulta Tabela BNCC">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            </button>
             <button class="btn-icon" id="btn-profile-switch" onclick="openProfileSwitch()" title="Trocar Turma">
                 <svg viewBox="0 0 24 24"><path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h13.8"></path><path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H3.2"></path></svg>
             </button>
             <button class="btn-icon" onclick="openSettings()" id="btn-settings" title="Configurações">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
-            <button class="btn-primary" onclick="acionarGeracaoPDF()" id="btn-pdf" style="padding: 0 12px;">
+            <button class="btn-primary" onclick="acionarGeracaoPDF()" id="btn-pdf">
                 <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span class="hide-text-mobile">Gerar PDF</span>
+                Gerar PDF
             </button>
         </div>
     </header>
 
     <div id="view-main" class="view active">
-        <!-- Renderizado dinamicamente via JS (Híbrido) -->
+        <!-- BARRA DE TABS MOBILE (Dias da Semana) -->
+        <div class="mobile-day-tabs" id="mobile-day-tabs"></div>
+        <div class="week-container" id="week-grid"></div>
     </div>
 
     <!-- VIEW: SETTINGS -->
-    <div id="view-settings" class="view" style="padding: 0;">
+    <div id="view-settings" class="view" style="padding-bottom: 0;">
         <div class="settings-container">
-            
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    Informações Básicas
-                </h3>
+                <h3>Informações Básicas</h3>
                 <div class="form-grid">
                     <div class="form-group"><label>Escola</label><input type="text" id="cfg-escola" class="input-flat" placeholder="Ex: EMEF Machado de Assis"></div>
                     
-                    <div style="display: flex; gap: 10px;">
-                        <div class="form-group" style="flex:1;">
+                    <div class="form-row-compact">
+                        <div class="form-group">
                             <label>Série/Ano</label>
                             <select id="cfg-serie" class="input-flat">
                                 <option value="1º Ano">1º Ano</option><option value="2º Ano">2º Ano</option>
                                 <option value="3º Ano">3º Ano</option><option value="4º Ano">4º Ano</option><option value="5º Ano">5º Ano</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex:1;"><label>Turma (Letra)</label><input type="text" id="cfg-turma-letra" class="input-flat" placeholder="Ex: A, B, C" maxlength="2"></div>
+                        <div class="form-group"><label>Turma (Letra)</label><input type="text" id="cfg-turma-letra" class="input-flat" placeholder="Ex: A, B, C" maxlength="2"></div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Turno</label>
                         <select id="cfg-turno" class="input-flat" onchange="updateShiftPresets()">
@@ -235,19 +221,10 @@
                         <label>Período da Semana</label>
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="cfg-periodo" class="input-flat" placeholder="Ex: 01/08 a 05/08" style="flex: 1;">
-                            <button class="btn-outline" onclick="document.getElementById('cfg-periodo').value = getAutoWeekPeriod();" title="Preencher com a Semana Atual" style="padding: 0 14px;">
-                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; color: var(--accent); margin:0;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <button class="btn-outline" onclick="confirmNewWeek();" title="Iniciar Nova Semana (Limpa Grade)" style="padding: 0 12px; border-color: var(--accent); color: var(--accent);">
+                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                             </button>
                         </div>
-                    </div>
-
-                    <div class="form-group" style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 4px;">
-                        <label>Modo de Visualização (Layout)</label>
-                        <select id="cfg-view-mode" class="input-flat" onchange="livePreviewMode(this.value)">
-                            <option value="auto">Automático (Adapta à tela do aparelho)</option>
-                            <option value="mobile">Forçar Vertical (Abas Dia a Dia)</option>
-                            <option value="desktop">Forçar Horizontal (Colunas Lado a Lado)</option>
-                        </select>
                     </div>
                     
                     <div class="form-group"><label>Prof. Regente</label><input type="text" id="cfg-prof" class="input-flat"></div>
@@ -256,13 +233,10 @@
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    Opções de Preenchimento
-                </h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Crie ou remova itens que aparecem como botões clicáveis no modal de aula.</p>
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <select id="cfg-custom-cat" class="input-flat" onchange="renderCustomList()">
+                <h3>Personalizar Opções (Preenchimento Rápido)</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Crie ou remova itens que aparecem como botões clicáveis no modal de aula.</p>
+                <div class="form-row-compact" style="margin-bottom: 8px;">
+                    <select id="cfg-custom-cat" class="input-flat" onchange="renderCustomList()" style="flex: 1;">
                         <option value="dinamicas">Dinâmicas e Abordagens</option>
                         <option value="recursos">Recursos e Materiais</option>
                         <option value="ext">Eventos Externos / Atípicos</option>
@@ -270,28 +244,22 @@
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="cfg-new-custom" class="input-flat" placeholder="Nome do item..." style="flex: 1;">
-                    <button class="btn-primary" style="padding: 0 14px;" onclick="addCustomItem()"><svg viewBox="0 0 24 24" style="margin:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                    <button class="btn-primary" onclick="addCustomItem()"><svg viewBox="0 0 24 24" style="margin-right:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                 </div>
-                <div class="list-container" id="cfg-custom-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: var(--bg);"></div>
+                <div class="list-container" id="cfg-custom-list" style="max-height: 180px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 6px; padding: 4px; background: var(--bg);"></div>
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    Livros Didáticos (PNLD)
-                </h3>
+                <h3>Livros Didáticos (PNLD / Editoras)</h3>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="cfg-new-book" class="input-flat" placeholder="Nome do Livro ou Coleção" style="flex: 1;">
-                    <button class="btn-primary" style="padding: 0 14px;" onclick="addBook()"><svg viewBox="0 0 24 24" style="margin:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                    <button class="btn-primary" onclick="addBook()"><svg viewBox="0 0 24 24" style="margin-right:0;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                 </div>
-                <div class="list-container" id="cfg-books-list" style="max-height: 180px; overflow-y: auto; margin-top: 10px;"></div>
+                <div class="list-container" id="cfg-books-list" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    Horários das Aulas
-                </h3>
+                <h3>Horários das Aulas (5 Tempos)</h3>
                 <div class="form-grid" id="cfg-times-container"></div>
                 <div class="form-grid" style="margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px;">
                     <div class="form-group">
@@ -305,14 +273,11 @@
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    Sábado Letivo
-                </h3>
+                <h3>Sábado Letivo</h3>
                 <div class="form-grid">
                     <label class="check-group">
                         <input type="checkbox" id="cfg-sab-ativo" onchange="toggleSabado()">
-                        <span style="font-size: 0.95rem; font-weight: 600;">Ativar Sábado Letivo na Grade</span>
+                        <span style="font-size: 0.9rem; font-weight: 600;">Ativar Sábado Letivo na Grade</span>
                     </label>
                     <div class="form-group" id="cfg-sab-mirror-group" style="opacity: 0.5; pointer-events: none;">
                         <label>Copiar disciplinas de qual dia?</label>
@@ -324,30 +289,26 @@
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    Matriz Curricular
-                </h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Defina as disciplinas fixas de cada dia da semana.</p>
-                <div id="matrix-container">
-                    <!-- Preenchido via JS (Vira lista no mobile, e Cards em Linha no desktop) -->
+                <h3>Matriz Curricular</h3>
+                <div style="overflow-x: auto;">
+                    <table class="matrix-table">
+                        <thead><tr><th>AULA</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead>
+                        <tbody id="matrix-body"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="settings-section">
-                <h3>
-                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--accent);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    Backup e Restauração
-                </h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Exporte seus dados para transferir para outro dispositivo ou guarde por segurança.</p>
-                <div style="display: flex; gap: 10px; flex-direction: column;">
-                    <button class="btn-outline" style="border-color: var(--accent); color: var(--accent);" onclick="exportData()">
+                <h3>Backup e Restauração</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Exporte seus dados para transferir para outro dispositivo ou guarde por segurança.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" style="flex: 1; border-color: var(--accent); color: var(--accent);" onclick="exportData()">
                         <svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Exportar Backup (JSON)
+                        Exportar
                     </button>
-                    <button class="btn-outline" style="border-color: var(--warning); color: var(--warning);" onclick="triggerImport()">
+                    <button class="btn-outline" style="flex: 1; border-color: var(--warning); color: var(--warning);" onclick="triggerImport()">
                         <svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                        Restaurar de um Backup
+                        Importar
                     </button>
                     <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
                 </div>
@@ -355,8 +316,26 @@
         </div>
         
         <div class="settings-bottom-bar" id="settings-footer">
-            <button class="btn-outline" style="flex:1;" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
-            <button class="btn-primary" style="flex:1;" onclick="saveSettings()">Salvar</button>
+            <button class="btn-outline" onclick="navigateBack()" id="btn-cancel-settings">Cancelar</button>
+            <button class="btn-primary" onclick="saveSettings()">Salvar Configurações</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CONSULTA BNCC -->
+    <div class="modal-overlay" id="modal-bncc" onclick="handleOverlayClick(event, 'modal-bncc')">
+        <div class="modal-content" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h3 style="font-size: 1.1rem; display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--accent);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Tabela BNCC
+                </h3>
+                <button class="btn-icon" onclick="closeModal('modal-bncc')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body" id="bncc-modal-body" style="padding: 0;">
+            </div>
+            <div class="modal-footer" style="padding: 10px 16px;">
+                <button class="btn-primary" onclick="closeModal('modal-bncc')">Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -375,10 +354,10 @@
                 <div id="profiles-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
             </div>
             <div class="modal-footer" style="flex-direction: column; align-items: stretch; background: var(--surface-hover);">
-                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 6px;">Criar Nova Turma (Em Branco)</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px;">Criar Nova Turma (Em Branco)</div>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="new-profile-name" class="input-flat" placeholder="Ex: 5º Ano B (Tarde)" style="flex: 1;">
-                    <button class="btn-primary" onclick="createNewProfile()">Criar</button>
+                    <button class="btn-primary" onclick="createNewProfile()">Adicionar</button>
                 </div>
             </div>
         </div>
@@ -396,28 +375,21 @@
 
     <!-- MODAL: EDIÇÃO DE AULA -->
     <div class="modal-overlay" id="modal-slot" onclick="handleOverlayClick(event, 'modal-slot')">
-        <div class="modal-content" style="height: 95dvh; max-height: 95dvh;">
+        <div class="modal-content">
             
             <div class="modal-header">
-                <h3 id="modal-slot-title" style="font-size: 1.05rem;">Editar Aula</h3>
+                <h3 id="modal-slot-title" style="font-size: 1.1rem;">Editar Aula</h3>
                 <button class="btn-icon" onclick="closeModal('modal-slot')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             
-            <div class="modal-body" style="padding-bottom: 16px;">
-                
-                <div class="form-group" style="margin-bottom: 4px;">
-                    <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Competência / Cód. BNCC 1</span>
-                        <span id="bncc-status-badge" style="font-size: 0.7rem; background:#e0f2fe; padding:2px 6px; border-radius:4px;">Carregando...</span>
-                    </label>
-                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection(1)" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
-                </div>
+            <div class="modal-body" style="padding-bottom: 0;">
                 
                 <div class="form-group" style="margin-bottom: 12px;">
                     <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Competência / Cód. BNCC 2 (Opcional)</span>
+                        <span>Competência / Cód. BNCC</span>
+                        <span id="bncc-status-badge" style="font-size: 0.7rem; background:#e0f2fe; padding:2px 6px; border-radius:4px;">Carregando...</span>
                     </label>
-                    <select id="slot-bncc-2" class="input-flat" onchange="handleBNCCSelection(2)" style="font-size: 0.85rem; padding: 10px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
+                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection()" style="font-size: 0.85rem; padding: 8px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
@@ -426,15 +398,15 @@
                 </div>
 
                 <div class="tabs-header">
-                    <div class="tab-btn active" onclick="switchTab('tab-rapido')" id="btn-tab-rapido">Montagem Rápida</div>
+                    <div class="tab-btn active" onclick="switchTab('tab-rapido')" id="btn-tab-rapido">Preenchimento Rápido</div>
                     <div class="tab-btn" onclick="switchTab('tab-livre')" id="btn-tab-livre">Texto Livre</div>
                 </div>
 
-                <div class="tab-content active" id="tab-rapido" style="padding-top: 8px;">
+                <div class="tab-content active" id="tab-rapido" style="padding-top: 12px;">
                     
                     <div class="switch-container" style="margin-bottom: 0; background-color: var(--warning-light, #fffbeb); border-color: var(--warning);">
                         <div>
-                            <span style="font-weight: 700; font-size: 0.9rem; display: block; color: var(--text);">Evento Externo / Atípico</span>
+                            <span style="font-weight: 600; font-size: 0.9rem; display: block; color: var(--text);">Evento Externo / Atípico</span>
                             <span style="font-size: 0.75rem; color: var(--text-muted);">Sobrescreve opções de recursos</span>
                         </div>
                         <label class="switch">
@@ -443,27 +415,27 @@
                         </label>
                     </div>
 
-                    <div id="slot-ext-area" style="display: none; flex-direction: column; gap: 12px; padding: 16px 12px; background: var(--bg); border: 1px dashed var(--warning); border-radius: 8px; margin-top: 10px;">
+                    <div id="slot-ext-area" style="display: none; flex-direction: column; gap: 8px; padding: 12px; background: var(--bg); border: 1px dashed var(--warning); border-radius: 8px;">
                         <div class="section-label" style="border-bottom-color: var(--warning); color: var(--warning);">Selecione o Evento</div>
-                        <div class="chips-container" id="chips-ext" style="margin-bottom: 4px;"></div>
+                        <div class="chips-container" id="chips-ext" style="margin-bottom: 8px;"></div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label style="color: var(--warning);">Detalhes (Opcional)</label>
                             <input type="text" id="slot-ext-details" class="input-flat" placeholder="Ex: Local da visita, Tema da feira..." oninput="isDirty=true;" style="border-color: var(--warning);">
                         </div>
                     </div>
 
-                    <div id="slot-normal-area" style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
+                    <div id="slot-normal-area" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
                         <div>
                             <div class="section-label">Dinâmica e Abordagem</div>
                             <div class="chips-container" id="chips-dinamicas"></div>
-                            <input type="text" id="slot-dinamica-desc" class="input-flat" placeholder="Detalhes da dinâmica..." oninput="isDirty=true;" style="font-size: 0.85rem; padding: 10px; margin-top: 4px;">
+                            <input type="text" id="slot-dinamica-desc" class="input-flat" placeholder="Detalhes (Ex: sobre a revolução industrial...)" oninput="isDirty=true;" style="font-size: 0.85rem; padding: 8px; margin-top: 2px;">
                         </div>
 
                         <div>
                             <div class="section-label">Recursos e Materiais</div>
                             
                             <div class="switch-container" style="margin-top: 4px;">
-                                <div><span style="font-weight: 700; font-size: 0.9rem; display: block;">Usar Livro Didático</span></div>
+                                <div><span style="font-weight: 600; font-size: 0.9rem; display: block;">Usar Livro Didático</span></div>
                                 <label class="switch">
                                     <input type="checkbox" id="slot-book-toggle" onchange="toggleBookSection()">
                                     <span class="slider"></span>
@@ -477,7 +449,7 @@
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Páginas trabalhadas</label>
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
                                         <div class="stepper-group">
                                             <button class="stepper-btn" onclick="stepPage('start', -1)">-</button>
                                             <input type="number" id="slot-book-page-start" class="stepper-input" oninput="syncPages(); isDirty=true;" value="">
@@ -494,13 +466,13 @@
                             </div>
 
                             <div class="chips-container" id="chips-recursos"></div>
-                            <input type="text" id="slot-recurso-desc" class="input-flat" placeholder="Detalhes do recurso..." oninput="isDirty=true;" style="font-size: 0.85rem; padding: 10px; margin-top: 4px;">
+                            <input type="text" id="slot-recurso-desc" class="input-flat" placeholder="Detalhes (Ex: documentário do YouTube...)" oninput="isDirty=true;" style="font-size: 0.85rem; padding: 8px; margin-top: 2px;">
                         </div>
                     </div>
                 </div>
 
-                <div class="tab-content" id="tab-livre" style="padding-top: 8px;">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;">
+                <div class="tab-content" id="tab-livre" style="padding-top: 12px;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
                         Use este espaço para digitar o desenvolvimento da aula. <b>Ele será adicionado logo abaixo do Assunto/BNCC.</b>
                     </div>
                     <textarea id="slot-textarea" placeholder="Digite os detalhes da aula..." oninput="isDirty=true;"></textarea>
@@ -508,20 +480,20 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn-outline" style="flex:1;" onclick="closeModal('modal-slot')">Cancelar</button>
-                <button class="btn-primary" style="flex:1;" onclick="saveSlot()">Salvar Aula</button>
+                <button class="btn-outline" onclick="closeModal('modal-slot')">Cancelar</button>
+                <button class="btn-primary" onclick="saveSlot()">Salvar Aula</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: ALERT -->
     <div class="modal-overlay" id="modal-alert" onclick="handleOverlayClick(event, 'modal-alert')">
-        <div class="modal-content" style="width: 320px; text-align: center; align-items: center; max-height: unset; overflow: hidden; padding: 24px;">
-            <h3 id="alert-title" style="margin-bottom: 10px; font-size: 1.2rem;">Aviso</h3>
-            <p id="alert-message" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; line-height: 1.4;"></p>
-            <div style="display: flex; width: 100%; justify-content: center; gap: 12px; margin-top: 16px;">
+        <div class="modal-content" style="width: 350px; text-align: center; align-items: center; max-height: unset; overflow: hidden; padding: 20px;">
+            <h3 id="alert-title">Aviso</h3>
+            <p id="alert-message" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 10px;"></p>
+            <div style="display: flex; width: 100%; justify-content: center; gap: 10px; margin-top: 16px;">
                 <button class="btn-outline" id="alert-btn-cancel" style="display:none; flex: 1;" onclick="closeModal('modal-alert')">Cancelar</button>
-                <button class="btn-primary" id="alert-btn-confirm" style="flex: 1; background: var(--accent);" onclick="executeAlertCallback()">OK</button>
+                <button class="btn-danger" id="alert-btn-confirm" style="flex: 1;" onclick="executeAlertCallback()">Sim</button>
             </div>
         </div>
     </div>
@@ -555,9 +527,6 @@
         let alertCallback = null;
         let isFirstRun = false;
         let activeTab = 'tab-rapido';
-        
-        let activeDayIndex = new Date().getDay() - 1; 
-        if(activeDayIndex < 0 || activeDayIndex > 4) activeDayIndex = 0; 
 
         let activeDinamicas = [];
         let activeRecursos = [];
@@ -575,9 +544,23 @@
             return `${pad(mon.getDate())}/${pad(mon.getMonth()+1)} a ${pad(fri.getDate())}/${pad(fri.getMonth()+1)}`;
         }
 
+        function confirmNewWeek() {
+            customConfirm(
+                "Iniciar Nova Semana",
+                "Atenção: Esta ação atualizará as datas e APAGARÁ TODAS AS AULAS da grade atual. Deseja continuar?",
+                () => {
+                    document.getElementById('cfg-periodo').value = getAutoWeekPeriod();
+                    appConfig.periodo = getAutoWeekPeriod();
+                    appData.contents = {}; 
+                    saveCurrentProfile();
+                    renderMainGrid();
+                    customAlert("Sucesso", "Grade de aulas limpa e semana atualizada para: " + getAutoWeekPeriod());
+                }
+            );
+        }
+
         function getDefaultConfig() {
             return {
-                viewMode: "auto",
                 escola: "", serie: "5º Ano", turmaLetra: "", prof: "", profEd: "", periodo: getAutoWeekPeriod(), turno: "Manhã",
                 tempos: JSON.parse(JSON.stringify(SHIFT_PRESETS["Manhã"].tempos)),
                 intervaloPosicao: SHIFT_PRESETS["Manhã"].intervaloPosicao, 
@@ -589,70 +572,6 @@
                 matriz: Array(5).fill().map(() => Array(5).fill("Língua Portuguesa"))
             };
         }
-
-        function applyViewMode() {
-            let mode = appConfig.viewMode || 'auto';
-            let isDesktop = false;
-            if (mode === 'desktop') isDesktop = true;
-            else if (mode === 'mobile') isDesktop = false;
-            else isDesktop = (window.innerWidth > 768);
-            
-            if (isDesktop) document.body.classList.add('desktop-mode');
-            else document.body.classList.remove('desktop-mode');
-        }
-
-        function livePreviewMode(value) {
-            let isDesktop = false;
-            if (value === 'desktop') isDesktop = true;
-            else if (value === 'mobile') isDesktop = false;
-            else isDesktop = (window.innerWidth > 768);
-            
-            if (isDesktop) document.body.classList.add('desktop-mode');
-            else document.body.classList.remove('desktop-mode');
-        }
-
-        window.addEventListener('resize', () => {
-            if(!appConfig.viewMode || appConfig.viewMode === 'auto') applyViewMode();
-        });
-
-        // --- SISTEMA GLOBAL: ESCUTAR ENTER ---
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                // Se o foco estiver no textarea (Texto Livre), permite a quebra de linha normal.
-                if (e.target.tagName.toLowerCase() === 'textarea') return;
-
-                // 1. Alerta
-                if (document.getElementById('modal-alert').classList.contains('active')) {
-                    e.preventDefault();
-                    executeAlertCallback();
-                    return;
-                }
-                
-                // 2. Modal de Aula
-                if (document.getElementById('modal-slot').classList.contains('active')) {
-                    e.preventDefault();
-                    saveSlot();
-                    return;
-                }
-
-                // 3. Switch de Turmas
-                if (document.getElementById('modal-switch').classList.contains('active')) {
-                    e.preventDefault();
-                    let inputName = document.getElementById('new-profile-name').value.trim();
-                    if(inputName) createNewProfile();
-                    else closeModal('modal-switch');
-                    return;
-                }
-
-                // 4. Welcome
-                if (document.getElementById('modal-welcome').classList.contains('active')) {
-                    e.preventDefault();
-                    closeModal('modal-welcome');
-                    openSettings(true);
-                    return;
-                }
-            }
-        });
 
         window.onload = () => {
             let savedIndex = localStorage.getItem('planner_index_v2');
@@ -715,9 +634,6 @@
             let badge = document.getElementById('current-profile-badge');
             if(badge) badge.innerText = profInfo ? profInfo.name : 'Turma';
 
-            if(!appConfig.sabAtivo && activeDayIndex === 5) activeDayIndex = 4;
-
-            applyViewMode();
             renderMainGrid();
             buildSettingsMatrix();
             loadBNCCForCurrentProfile();
@@ -742,7 +658,6 @@
             }
 
             document.getElementById('bncc-status-badge').innerText = "Atualizando API...";
-            
             fetch(`${SCRIPT_URL}?ano=${anoStr}`)
             .then(res => res.json())
             .then(data => {
@@ -755,11 +670,59 @@
                 }
             })
             .catch(err => {
-                console.error("Erro API BNCC:", err);
                 document.getElementById('bncc-status-badge').innerText = "Modo Offline";
                 document.getElementById('bncc-status-badge').style.background = "#fee2e2";
                 document.getElementById('bncc-status-badge').style.color = "#991b1b";
             });
+        }
+
+        function openBnccModal() {
+            if (!window.bnccCache || window.bnccCache.length === 0) {
+                customAlert("Aviso", "O banco BNCC ainda não foi carregado ou está indisponível offline para esta série.");
+                return;
+            }
+
+            let grouped = {};
+            window.bnccCache.forEach(item => {
+                if (!grouped[item.componente]) grouped[item.componente] = [];
+                grouped[item.componente].push(item);
+            });
+
+            let tabsHtml = '<div class="tabs-header" style="overflow-x: auto; white-space: nowrap; display: flex;">';
+            let contentHtml = '';
+            let first = true;
+
+            for (let comp in grouped) {
+                let safeCompId = 'bncc-tab-' + comp.replace(/\s+/g, '-').toLowerCase();
+                let activeClass = first ? 'active' : '';
+
+                tabsHtml += `<div class="tab-btn ${activeClass}" onclick="switchBnccTab('${safeCompId}', this)" style="flex: 0 0 auto;">${comp}</div>`;
+
+                contentHtml += `<div class="tab-content ${activeClass}" id="${safeCompId}" style="padding-top: 12px; height: 60vh; overflow-y: auto;">`;
+                contentHtml += `<table class="matrix-table" style="text-align: left; margin-top: 0;">
+                                    <thead><tr><th style="width: 85px;">Código</th><th>Habilidade</th></tr></thead><tbody>`;
+
+                grouped[comp].forEach(hab => {
+                    contentHtml += `<tr><td style="font-weight: bold; color: var(--accent); font-size: 0.8rem; vertical-align: top;">${hab.codigo}</td><td style="font-size: 0.8rem; line-height: 1.3;">${hab.texto}</td></tr>`;
+                });
+
+                contentHtml += `</tbody></table></div>`;
+                first = false;
+            }
+            tabsHtml += '</div>';
+
+            document.getElementById('bncc-modal-body').innerHTML = tabsHtml + contentHtml;
+            openModal('modal-bncc');
+        }
+
+        function switchBnccTab(tabId, el) {
+            let header = el.parentElement;
+            Array.from(header.children).forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+
+            let container = document.getElementById('bncc-modal-body');
+            Array.from(container.getElementsByClassName('tab-content')).forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
         }
 
         function saveCurrentProfile() {
@@ -854,6 +817,7 @@
 
         window.handleAndroidBack = function() {
             if(document.getElementById('modal-alert').classList.contains('active')) { closeModal('modal-alert'); return; }
+            if(document.getElementById('modal-bncc').classList.contains('active')) { closeModal('modal-bncc'); return; }
             if(document.getElementById('modal-switch').classList.contains('active')) { closeModal('modal-switch'); return; }
             if(document.getElementById('modal-slot').classList.contains('active')) {
                 if(isDirty) customConfirm("Atenção", "Sair sem salvar as alterações desta aula?", () => { isDirty = false; closeModal('modal-slot'); });
@@ -861,10 +825,7 @@
                 return;
             }
             if(document.getElementById('view-settings').classList.contains('active')) { 
-                if(!isFirstRun) {
-                    applyViewMode(); 
-                    navigateBack(); 
-                }
+                if(!isFirstRun) navigateBack(); 
                 return; 
             }
             if(window.AppInventor) window.AppInventor.setWebViewString('VOLTAR_MENU');
@@ -880,6 +841,7 @@
             if (badge) badge.innerText = profInfo ? profInfo.name : 'Turma';
 
             document.getElementById('btn-back').style.display = 'none';
+            document.getElementById('btn-bncc-consult').style.display = 'flex';
             document.getElementById('btn-settings').style.display = 'flex';
             document.getElementById('btn-pdf').style.display = 'flex';
             document.getElementById('btn-profile-switch').style.display = 'flex';
@@ -911,10 +873,9 @@
             document.getElementById('slot-book-page-end').value = start;
         }
 
-        function handleBNCCSelection(typeId) {
+        function handleBNCCSelection() {
             isDirty = true;
-            let elemId = typeId === 2 ? 'slot-bncc-2' : 'slot-bncc';
-            let code = document.getElementById(elemId).value;
+            let code = document.getElementById('slot-bncc').value;
             let assuntoInput = document.getElementById('slot-assunto');
             if (code && window.bnccCache) {
                 let bnccObj = window.bnccCache.find(b => b.codigo === code);
@@ -931,22 +892,17 @@
         }
 
         function buildOrganicText(data, isPdf = false) {
-            if (!data) return isPdf ? "" : '<span style="color:#cbd5e1; display:flex; align-items:center; height:100%; justify-content:center; font-style:italic;">Tocar para planejar...</span>';
+            if (!data) return isPdf ? "" : '<span style="color:#cbd5e1;">Tocar para planejar...</span>';
             
             let header = [];
-            let bnccHTML = [];
-            
-            if (data.bncc) bnccHTML.push(`[${data.bncc}]`);
-            if (data.bncc2) bnccHTML.push(`[${data.bncc2}]`);
-            
-            if (bnccHTML.length > 0) header.push(`<span style="color:#0369a1; font-weight:700;">${bnccHTML.join(" ")}</span>`);
+            if (data.bncc) header.push(`<span style="color:#0369a1; font-weight:700;">[${data.bncc}]</span>`);
             if (data.assunto) header.push(`<b>${data.assunto}</b>`);
             let headerHTML = header.length > 0 ? header.join(" ") : "";
 
             if (data.useExt && data.ext && data.ext.length > 0 && !data.isFreeText) { 
                 let extHTML = `<div style="font-weight: 700; color: ${isPdf ? '#b45309' : 'var(--warning)'}; text-transform: uppercase; margin-top: ${isPdf ? '8px' : '4px'}; ${isPdf ? 'text-align: center; font-size: 9pt;' : ''}">${data.ext[0]}</div>`;
                 if (data.extDetails && data.extDetails.trim() !== "") {
-                    extHTML += `<div style="font-size: 0.8rem; color: #b45309; margin-top:2px; ${isPdf ? 'text-align: center;' : ''}">↳ ${data.extDetails}</div>`;
+                    extHTML += `<div style="font-size: 0.75rem; color: #b45309; margin-top:2px; ${isPdf ? 'text-align: center;' : ''}">↳ ${data.extDetails}</div>`;
                 }
                 return headerHTML ? `${headerHTML}<br>${extHTML}` : extHTML;
             }
@@ -982,41 +938,61 @@
 
             if (bodyText) bodyText = bodyText + (bodyText.endsWith('.') ? "" : ".");
 
-            if (!headerHTML && !bodyText) return isPdf ? "" : '<span style="color:#cbd5e1; display:flex; align-items:center; height:100%; justify-content:center; font-style:italic;">Aula em branco...</span>';
+            if (!headerHTML && !bodyText) return isPdf ? "" : '<span style="color:#cbd5e1;">Aula em branco...</span>';
             
-            if(headerHTML && bodyText) return `<div style="margin-bottom:4px;">${headerHTML}</div><div>${bodyText}</div>`;
+            if(headerHTML && bodyText) return `<div style="margin-bottom:3px;">${headerHTML}</div><div>${bodyText}</div>`;
             else if (headerHTML) return headerHTML;
             else return bodyText;
         }
 
-        function switchDay(index) {
-            activeDayIndex = index;
-            renderMainGrid();
+        function switchMobileDay(d, totalDays) {
+            for(let i=0; i<totalDays; i++) {
+                let col = document.getElementById(`day-col-${i}`);
+                let tab = document.getElementById('mobile-day-tabs').children[i];
+                if(col) col.classList.remove('active');
+                if(tab) tab.classList.remove('active');
+            }
+            let activeCol = document.getElementById(`day-col-${d}`);
+            let activeTab = document.getElementById('mobile-day-tabs').children[d];
+            if(activeCol) activeCol.classList.add('active');
+            if(activeTab) activeTab.classList.add('active');
         }
 
         function renderMainGrid() {
-            const container = document.getElementById('view-main');
+            const container = document.getElementById('week-grid');
+            let tabsContainer = document.getElementById('mobile-day-tabs');
+            
             container.innerHTML = '';
+            tabsContainer.innerHTML = '';
             const totalDays = appConfig.sabAtivo ? 6 : 5;
 
-            let tabsHTML = `<div class="day-tabs" id="day-tabs-container">`;
             for (let d = 0; d < totalDays; d++) {
-                tabsHTML += `<div class="day-tab ${d === activeDayIndex ? 'active' : ''}" onclick="switchDay(${d})">${DAYS_NAMES[d]}</div>`;
-            }
-            tabsHTML += `</div>`;
-            
-            let gridHTML = `<div class="week-container">`;
-            for (let d = 0; d < totalDays; d++) {
+                
+                // CRIA TABS MOBILE RESPONSIVAS
+                let tab = document.createElement('div');
+                tab.className = 'mobile-day-tab' + (d === 0 ? ' active' : '');
+                tab.innerText = DAYS_NAMES[d];
+                tab.onclick = () => switchMobileDay(d, totalDays);
+                tabsContainer.appendChild(tab);
+
+                // CRIA COLUNAS
+                let col = document.createElement('div');
+                col.className = 'day-col' + (d === 0 ? ' active' : '');
+                col.id = `day-col-${d}`;
+                col.innerHTML = `<div class="day-header">${DAYS_NAMES[d]}</div>`;
+                
+                let body = document.createElement('div');
+                body.className = 'day-body';
+                
                 let sourceDayIndex = (d === 5) ? (parseInt(appConfig.sabEspelha) || 0) : d;
                 let daySubjects = appConfig.matriz[sourceDayIndex] || Array(5).fill("Língua Portuguesa");
 
-                gridHTML += `<div class="day-col ${d === activeDayIndex ? 'active' : ''}">`;
-                gridHTML += `<div class="day-header">${DAYS_NAMES[d]}</div>`;
-                gridHTML += `<div class="day-body">`;
-
                 for (let aula = 0; aula < 5; aula++) {
                     if (aula === parseInt(appConfig.intervaloPosicao)) {
-                        gridHTML += `<div class="interval">${appConfig.intervaloTempo} • INTERVALO</div>`;
+                        let intDiv = document.createElement('div');
+                        intDiv.className = 'interval';
+                        intDiv.innerText = `${appConfig.intervaloTempo} • INTERVALO`;
+                        body.appendChild(intDiv);
                     }
 
                     let slotId = `d${d}-a${aula}`;
@@ -1024,30 +1000,25 @@
                     let time = (appConfig.tempos && appConfig.tempos[aula]) ? appConfig.tempos[aula] : "00:00";
                     let slotData = appData.contents[slotId];
 
-                    gridHTML += `
-                        <div class="slot-card" onclick="openSlotModal('${slotId}', '${subject}', '${time}')">
-                            <div class="slot-header"><span>${time}</span><span class="slot-subject">${subject}</span></div>
-                            <div class="slot-content">${buildOrganicText(slotData, false)}</div>
-                        </div>
+                    let card = document.createElement('div');
+                    card.className = 'slot-card';
+                    card.onclick = () => openSlotModal(slotId, subject, time);
+                    card.innerHTML = `
+                        <div class="slot-header"><span>${time}</span><span class="slot-subject">${subject}</span></div>
+                        <div class="slot-content">${buildOrganicText(slotData, false)}</div>
                     `;
+                    body.appendChild(card);
                 }
+                
                 if (5 === parseInt(appConfig.intervaloPosicao)) {
-                    gridHTML += `<div class="interval">${appConfig.intervaloTempo} • INTERVALO</div>`;
+                    let intDiv = document.createElement('div');
+                    intDiv.className = 'interval';
+                    intDiv.innerText = `${appConfig.intervaloTempo} • INTERVALO`;
+                    body.appendChild(intDiv);
                 }
-                gridHTML += `</div></div>`;
-            }
-            gridHTML += `</div>`;
 
-            container.innerHTML = tabsHTML + gridHTML;
-
-            if (!document.body.classList.contains('desktop-mode')) {
-                setTimeout(() => {
-                    let tabsContainer = document.getElementById('day-tabs-container');
-                    if (tabsContainer) {
-                        let activeTabEl = tabsContainer.querySelector('.active');
-                        if(activeTabEl) activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }
-                }, 50);
+                col.appendChild(body);
+                container.appendChild(col);
             }
         }
 
@@ -1062,6 +1033,7 @@
             appConfig[cat].forEach((item, index) => {
                 let div = document.createElement('div');
                 div.className = 'list-item';
+                div.style.padding = '6px 12px';
                 div.innerHTML = `<span>${item}</span><button class="list-item-btn" onclick="removeCustomItem('${cat}', ${index})"><svg viewBox="0 0 24 24" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
                 container.appendChild(div);
             });
@@ -1159,36 +1131,29 @@
             selectBook.innerHTML = (appConfig.livros || []).map(l => `<option value="${l}">${l}</option>`).join('');
 
             const selectBncc = document.getElementById('slot-bncc');
-            const selectBncc2 = document.getElementById('slot-bncc-2');
-            
             selectBncc.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
-            selectBncc2.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
 
             if (window.bnccCache && window.bnccCache.length > 0) {
                 let filtered = window.bnccCache.filter(b => b.componente === subject);
                 if(filtered.length === 0) {
                     selectBncc.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
-                    selectBncc2.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
                 } else {
-                    let opts = '';
-                    filtered.forEach(b => { opts += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`; });
-                    selectBncc.innerHTML += opts;
-                    selectBncc2.innerHTML += opts;
+                    filtered.forEach(b => {
+                        selectBncc.innerHTML += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`;
+                    });
                 }
             } else {
                 selectBncc.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
-                selectBncc2.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
             }
 
             let slotData = appData.contents[id] || { 
-                assunto: "", bncc: "", bncc2: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
+                assunto: "", bncc: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
                 useBook: false, bookName: "", bookPageStart: "", bookPageEnd: "", 
                 useExt: false, ext: [], extDetails: "", isFreeText: false, freeText: "" 
             };
             
             document.getElementById('slot-assunto').value = slotData.assunto || "";
             selectBncc.value = slotData.bncc || "";
-            selectBncc2.value = slotData.bncc2 || "";
             
             const toggleExt = document.getElementById('slot-ext-toggle');
             toggleExt.checked = slotData.useExt || false;
@@ -1224,7 +1189,6 @@
             appData.contents[currentSlotId] = {
                 assunto: document.getElementById('slot-assunto').value.trim(),
                 bncc: document.getElementById('slot-bncc').value.trim(),
-                bncc2: document.getElementById('slot-bncc-2').value.trim(),
                 dinamicas: [...activeDinamicas],
                 dinamicaDesc: document.getElementById('slot-dinamica-desc').value.trim(),
                 recursos: [...activeRecursos],
@@ -1251,7 +1215,6 @@
             document.getElementById('cfg-turma-letra').value = appConfig.turmaLetra || "";
             document.getElementById('cfg-turno').value = appConfig.turno || "Manhã";
             document.getElementById('cfg-periodo').value = appConfig.periodo || "";
-            document.getElementById('cfg-view-mode').value = appConfig.viewMode || "auto";
             document.getElementById('cfg-prof').value = appConfig.prof || "";
             document.getElementById('cfg-prof-ed').value = appConfig.profEd || "";
             
@@ -1277,6 +1240,7 @@
             document.getElementById('view-main').classList.remove('active');
             document.getElementById('view-settings').classList.add('active');
             
+            document.getElementById('btn-bncc-consult').style.display = 'none';
             document.getElementById('btn-settings').style.display = 'none';
             document.getElementById('btn-pdf').style.display = 'none';
             document.getElementById('btn-profile-switch').style.display = 'none'; 
@@ -1315,25 +1279,15 @@
         }
 
         function buildSettingsMatrix() {
-            let container = document.getElementById('matrix-container');
-            container.innerHTML = '';
+            let tbody = document.getElementById('matrix-body');
+            tbody.innerHTML = '';
             let optionsHTML = SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('');
 
-            for(let d=0; d<5; d++) {
-                let dayCard = document.createElement('div');
-                dayCard.className = 'day-matrix-card';
-                dayCard.innerHTML = `<div class="day-matrix-title">${DAYS_NAMES[d]}</div>`;
-                
-                let slotsGrid = document.createElement('div');
-                for(let a=0; a<5; a++) {
-                    slotsGrid.innerHTML += `
-                    <div class="matrix-slot-row">
-                        <span class="matrix-slot-label">${a+1}ª</span>
-                        <select id="sel-d${d}-a${a}" class="input-flat">${optionsHTML}</select>
-                    </div>`;
-                }
-                dayCard.appendChild(slotsGrid);
-                container.appendChild(dayCard);
+            for(let a=0; a<5; a++) {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td><b>${a+1}ª</b></td>`;
+                for(let d=0; d<5; d++) { tr.innerHTML += `<td><select id="sel-d${d}-a${a}">${optionsHTML}</select></td>`; }
+                tbody.appendChild(tr);
             }
         }
 
@@ -1345,14 +1299,13 @@
 
         function saveSettings() {
             try {
-                let oldSerie = appConfig.serie;
+                let oldSerie = appConfig.serie; 
                 
                 appConfig.escola = document.getElementById('cfg-escola').value;
                 appConfig.serie = document.getElementById('cfg-serie').value;
                 appConfig.turmaLetra = document.getElementById('cfg-turma-letra').value;
                 appConfig.turno = document.getElementById('cfg-turno').value;
                 appConfig.periodo = document.getElementById('cfg-periodo').value;
-                appConfig.viewMode = document.getElementById('cfg-view-mode').value;
                 appConfig.prof = document.getElementById('cfg-prof').value;
                 appConfig.profEd = document.getElementById('cfg-prof-ed').value;
 
@@ -1386,9 +1339,7 @@
                 isFirstRun = false;
                 
                 if (oldSerie !== appConfig.serie) loadBNCCForCurrentProfile();
-                if(!appConfig.sabAtivo && activeDayIndex === 5) activeDayIndex = 4;
 
-                applyViewMode(); 
                 renderMainGrid();
                 navigateBack();
                 
