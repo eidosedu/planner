@@ -54,7 +54,6 @@
         
         .interval { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 6px; border: 1px dashed var(--border); border-radius: 6px; margin: 4px 0; background-color: var(--bg); pointer-events: none;}
 
-        /* RESPONSIVIDADE EM CELULARES (TABS DIÁRIAS) */
         .mobile-day-tabs { display: none; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; flex-shrink: 0; margin: -16px -16px 12px -16px; padding: 0 8px;}
         .mobile-day-tabs::-webkit-scrollbar { display: none; }
         .mobile-day-tab { padding: 14px 16px; display: inline-block; font-weight: 700; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;}
@@ -138,11 +137,8 @@
         .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         .chip { padding: 6px 14px; border-radius: 16px; background-color: var(--surface-hover); border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s;}
         .chip.active { background-color: var(--accent); color: white; border-color: var(--accent); }
-        
         .chip.external { border-color: var(--warning); color: var(--warning); background: transparent; }
         .chip.external.active { background-color: var(--warning); color: white; border-color: var(--warning); }
-
-        #slot-book-area { display: none; flex-direction: column; gap: 10px; background-color: var(--bg); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 16px;}
 
         textarea { width: 100%; height: 200px; resize: none; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background-color: var(--surface); outline: none; color: var(--text); line-height: 1.4; }
         textarea:focus { border-color: var(--accent); }
@@ -150,6 +146,13 @@
         .profile-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--surface-hover); cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
         .profile-item.active { background-color: #eff6ff; border-color: var(--accent); }
         .profile-item:hover { border-color: var(--accent); }
+
+        /* ESTILOS DO DROPDOWN BNCC CUSTOMIZADO E DINÂMICO */
+        .bncc-inline-dropdown { position: relative; margin-top: 4px; z-index: 10; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; box-shadow: var(--shadow-sm); max-height: 200px; overflow-y: auto;}
+        .bncc-dropdown-item { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.8rem; line-height: 1.4; color: var(--text); transition: background 0.2s; white-space: normal; }
+        .bncc-dropdown-item:last-child { border-bottom: none; }
+        .bncc-dropdown-item:hover { background-color: var(--surface-hover); }
+        .bncc-code-highlight { font-weight: 700; color: var(--accent); display: block; margin-bottom: 2px; }
 
         #pdf-export-container { display: none; }
         svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -185,7 +188,6 @@
     </header>
 
     <div id="view-main" class="view active">
-        <!-- BARRA DE TABS MOBILE (Dias da Semana) -->
         <div class="mobile-day-tabs" id="mobile-day-tabs"></div>
         <div class="week-container" id="week-grid"></div>
     </div>
@@ -331,15 +333,14 @@
                 </h3>
                 <button class="btn-icon" onclick="closeModal('modal-bncc')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
-            <div class="modal-body" id="bncc-modal-body" style="padding: 0;">
-            </div>
+            <div class="modal-body" id="bncc-modal-body" style="padding: 0;"></div>
             <div class="modal-footer" style="padding: 10px 16px;">
                 <button class="btn-primary" onclick="closeModal('modal-bncc')">Fechar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: SWITCH DE PERFIL (TURMAS) -->
+    <!-- MODAL: SWITCH DE PERFIL -->
     <div class="modal-overlay" id="modal-switch" onclick="handleOverlayClick(event, 'modal-switch')">
         <div class="modal-content">
             <div class="modal-header">
@@ -384,12 +385,17 @@
             
             <div class="modal-body" style="padding-bottom: 0;">
                 
-                <div class="form-group" style="margin-bottom: 12px;">
+                <!-- CONTAINER DINÂMICO MULTI-BNCC -->
+                <div class="form-group" style="margin-bottom: 12px; position: relative;">
                     <label style="color: #0369a1; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Competência / Cód. BNCC</span>
+                        <span>Competência(s) / Cód. BNCC</span>
                         <span id="bncc-status-badge" style="font-size: 0.7rem; background:#e0f2fe; padding:2px 6px; border-radius:4px;">Carregando...</span>
                     </label>
-                    <select id="slot-bncc" class="input-flat" onchange="handleBNCCSelection()" style="font-size: 0.85rem; padding: 8px; border-color: #bae6fd; background-color: #f0f9ff;"></select>
+                    <div id="bncc-inputs-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <button class="btn-outline" onclick="addBnccField()" style="margin-top: 4px; height: 32px; font-size: 0.8rem; border-color: #bae6fd; color: #0369a1; width: 100%;">
+                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 4px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Adicionar Cód. BNCC
+                    </button>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
@@ -515,6 +521,7 @@
 
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh6uWJh90-aYZT0O9aseqyVgkBD4E2u4B6A5YveJP3esEn_RmvVMekDEXDfiAnaz4f/exec";
         window.bnccCache = [];
+        let currentBnccList = []; 
 
         let dbIndex = { active: 'default', profiles: [{ id: 'default', name: 'Turma Principal' }] };
         let currentProfileId = 'default';
@@ -598,6 +605,13 @@
             currentProfileId = dbIndex.active || 'default';
             loadProfile(currentProfileId);
             if (isFirstRun) openModal('modal-welcome');
+
+            // Fechar dropdowns de BNCC ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#bncc-inputs-container')) {
+                    document.querySelectorAll('.bncc-inline-dropdown').forEach(el => el.style.display = 'none');
+                }
+            });
         };
 
         function loadProfile(id) {
@@ -688,7 +702,7 @@
                 grouped[item.componente].push(item);
             });
 
-            let tabsHtml = '<div class="tabs-header" style="overflow-x: auto; white-space: nowrap; display: flex;">';
+            let tabsHtml = '<div class="tabs-header">';
             let contentHtml = '';
             let first = true;
 
@@ -696,7 +710,7 @@
                 let safeCompId = 'bncc-tab-' + comp.replace(/\s+/g, '-').toLowerCase();
                 let activeClass = first ? 'active' : '';
 
-                tabsHtml += `<div class="tab-btn ${activeClass}" onclick="switchBnccTab('${safeCompId}', this)" style="flex: 0 0 auto;">${comp}</div>`;
+                tabsHtml += `<div class="tab-btn ${activeClass}" onclick="switchBnccTab('${safeCompId}', this)">${comp}</div>`;
 
                 contentHtml += `<div class="tab-content ${activeClass}" id="${safeCompId}" style="padding-top: 12px; height: 60vh; overflow-y: auto;">`;
                 contentHtml += `<table class="matrix-table" style="text-align: left; margin-top: 0;">
@@ -873,15 +887,110 @@
             document.getElementById('slot-book-page-end').value = start;
         }
 
-        function handleBNCCSelection() {
-            isDirty = true;
-            let code = document.getElementById('slot-bncc').value;
-            let assuntoInput = document.getElementById('slot-assunto');
-            if (code && window.bnccCache) {
-                let bnccObj = window.bnccCache.find(b => b.codigo === code);
-                if (bnccObj && assuntoInput.value.trim() === "") {
-                    assuntoInput.value = bnccObj.texto;
+        // --- LÓGICA DE MÚLTIPLAS CAIXAS BNCC ---
+        function getBnccValues() {
+            let container = document.getElementById('bncc-inputs-container');
+            let inputs = container.querySelectorAll('.bncc-input-element');
+            return Array.from(inputs).map(inp => inp.value);
+        }
+
+        function renderBnccFields(arr) {
+            const container = document.getElementById('bncc-inputs-container');
+            container.innerHTML = '';
+            
+            arr.forEach((val, idx) => {
+                let wrap = document.createElement('div');
+                wrap.style.display = 'flex';
+                wrap.style.flexDirection = 'column';
+                wrap.style.gap = '4px';
+                
+                let row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.gap = '8px';
+                
+                let inp = document.createElement('input');
+                inp.type = 'text';
+                inp.className = 'input-flat bncc-input-element';
+                inp.value = val;
+                inp.placeholder = "Buscar código ou palavra-chave...";
+                inp.style.flex = "1";
+                inp.style.borderColor = "#bae6fd";
+                inp.style.backgroundColor = "#f0f9ff";
+                
+                let drop = document.createElement('div');
+                drop.className = 'bncc-inline-dropdown';
+                drop.style.display = 'none';
+                
+                inp.oninput = (e) => { isDirty=true; filterBNCC(e.target, drop); };
+                inp.onclick = (e) => { 
+                    document.querySelectorAll('.bncc-inline-dropdown').forEach(el => el.style.display = 'none');
+                    filterBNCC(e.target, drop); 
+                };
+                
+                row.appendChild(inp);
+                
+                if (arr.length > 1) {
+                    let btn = document.createElement('button');
+                    btn.className = 'btn-icon';
+                    btn.style.width = '38px';
+                    btn.style.height = '38px';
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--danger);"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+                    btn.onclick = () => { isDirty=true; removeBnccField(idx); };
+                    row.appendChild(btn);
                 }
+                
+                wrap.appendChild(row);
+                wrap.appendChild(drop);
+                container.appendChild(wrap);
+            });
+        }
+
+        function addBnccField() {
+            isDirty = true;
+            let current = getBnccValues();
+            current.push("");
+            renderBnccFields(current);
+        }
+
+        function removeBnccField(idx) {
+            let current = getBnccValues();
+            current.splice(idx, 1);
+            renderBnccFields(current);
+        }
+
+        function filterBNCC(inputEl, dropEl) {
+            let term = inputEl.value.toLowerCase();
+            let filtered = currentBnccList.filter(b => 
+                b.codigo.toLowerCase().includes(term) || 
+                b.texto.toLowerCase().includes(term)
+            );
+            
+            dropEl.innerHTML = '';
+            if (filtered.length === 0) {
+                dropEl.innerHTML = '<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted);">Nenhuma habilidade encontrada...</div>';
+            } else {
+                filtered.forEach(b => {
+                    let item = document.createElement('div');
+                    item.className = 'bncc-dropdown-item';
+                    item.innerHTML = `<span class="bncc-code-highlight">${b.codigo}</span> ${b.texto}`;
+                    item.onclick = (e) => {
+                        e.stopPropagation();
+                        selectBNCC(b.codigo, b.texto, inputEl, dropEl);
+                    };
+                    dropEl.appendChild(item);
+                });
+            }
+            dropEl.style.display = 'block';
+        }
+
+        function selectBNCC(code, texto, inputEl, dropEl) {
+            inputEl.value = code;
+            dropEl.style.display = 'none';
+            isDirty = true;
+            
+            let assuntoInput = document.getElementById('slot-assunto');
+            if (assuntoInput.value.trim() === "") {
+                assuntoInput.value = texto;
             }
         }
 
@@ -895,7 +1004,15 @@
             if (!data) return isPdf ? "" : '<span style="color:#cbd5e1;">Tocar para planejar...</span>';
             
             let header = [];
-            if (data.bncc) header.push(`<span style="color:#0369a1; font-weight:700;">[${data.bncc}]</span>`);
+            
+            // Tratamento Seguro para Matrizes de BNCC antigas (string) e novas (array)
+            let bnccArray = [];
+            if (data.bncc) {
+                bnccArray = Array.isArray(data.bncc) ? data.bncc : [data.bncc];
+            }
+            let bnccStr = bnccArray.filter(v => v.trim() !== "").join(", ");
+            if (bnccStr) header.push(`<span style="color:#0369a1; font-weight:700;">[${bnccStr}]</span>`);
+            
             if (data.assunto) header.push(`<b>${data.assunto}</b>`);
             let headerHTML = header.length > 0 ? header.join(" ") : "";
 
@@ -968,14 +1085,12 @@
 
             for (let d = 0; d < totalDays; d++) {
                 
-                // CRIA TABS MOBILE RESPONSIVAS
                 let tab = document.createElement('div');
                 tab.className = 'mobile-day-tab' + (d === 0 ? ' active' : '');
                 tab.innerText = DAYS_NAMES[d];
                 tab.onclick = () => switchMobileDay(d, totalDays);
                 tabsContainer.appendChild(tab);
 
-                // CRIA COLUNAS
                 let col = document.createElement('div');
                 col.className = 'day-col' + (d === 0 ? ' active' : '');
                 col.id = `day-col-${d}`;
@@ -1130,30 +1245,26 @@
             const selectBook = document.getElementById('slot-book-select');
             selectBook.innerHTML = (appConfig.livros || []).map(l => `<option value="${l}">${l}</option>`).join('');
 
-            const selectBncc = document.getElementById('slot-bncc');
-            selectBncc.innerHTML = '<option value="">Sem BNCC vinculada...</option>';
-
+            currentBnccList = [];
             if (window.bnccCache && window.bnccCache.length > 0) {
-                let filtered = window.bnccCache.filter(b => b.componente === subject);
-                if(filtered.length === 0) {
-                    selectBncc.innerHTML = '<option value="">Nenhuma habilidade encontrada</option>';
-                } else {
-                    filtered.forEach(b => {
-                        selectBncc.innerHTML += `<option value="${b.codigo}">${b.codigo} - ${b.texto}</option>`;
-                    });
-                }
-            } else {
-                selectBncc.innerHTML = '<option value="">Banco BNCC offline/vazio</option>';
+                currentBnccList = window.bnccCache.filter(b => b.componente === subject);
             }
 
             let slotData = appData.contents[id] || { 
-                assunto: "", bncc: "", dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
+                assunto: "", bncc: [], dinamicas: [], dinamicaDesc: "", recursos: [], recursoDesc: "", 
                 useBook: false, bookName: "", bookPageStart: "", bookPageEnd: "", 
                 useExt: false, ext: [], extDetails: "", isFreeText: false, freeText: "" 
             };
             
+            // Migração de BNCC Antiga (String) para Array e Renderização
+            let initialBncc = [];
+            if (slotData.bncc) {
+                initialBncc = Array.isArray(slotData.bncc) ? slotData.bncc : [slotData.bncc];
+            }
+            if (initialBncc.length === 0) initialBncc = [""];
+            renderBnccFields(initialBncc);
+
             document.getElementById('slot-assunto').value = slotData.assunto || "";
-            selectBncc.value = slotData.bncc || "";
             
             const toggleExt = document.getElementById('slot-ext-toggle');
             toggleExt.checked = slotData.useExt || false;
@@ -1186,9 +1297,11 @@
         }
 
         function saveSlot() {
+            let cleanBncc = getBnccValues().map(v => v.trim()).filter(v => v !== "");
+
             appData.contents[currentSlotId] = {
                 assunto: document.getElementById('slot-assunto').value.trim(),
-                bncc: document.getElementById('slot-bncc').value.trim(),
+                bncc: cleanBncc,
                 dinamicas: [...activeDinamicas],
                 dinamicaDesc: document.getElementById('slot-dinamica-desc').value.trim(),
                 recursos: [...activeRecursos],
