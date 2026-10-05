@@ -1558,9 +1558,13 @@
             exportContainer.innerHTML = getExportHTML();
             exportContainer.style.display = 'block';
 
+            let turmaNome = `${appConfig.serie || ''} ${appConfig.turmaLetra || ''}`.trim();
+            let periodoNome = (appConfig.periodo || '').replace(/\//g, '-');
+            let pdfName = `Planejamento ${turmaNome} ${periodoNome}.pdf`.trim().replace(/\s+/g, ' ');
+
             const opt = { 
                 margin: 5, 
-                filename: 'Planner.pdf', 
+                filename: pdfName, 
                 image: { type: 'jpeg', quality: 0.98 }, 
                 html2canvas: { scale: 2 }, 
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
@@ -1575,7 +1579,7 @@
                     let base64Data = pdfBase64.split(',')[1];
                     let payload = JSON.stringify({ 
                         app: "PlannerSemanal", 
-                        fileName: `Planner_${appConfig.serie}_${appConfig.turmaLetra}.pdf`.replace(/\s/g, '_'),
+                        fileName: pdfName.replace(/\s/g, '_'),
                         fileData: base64Data 
                     });
                     
